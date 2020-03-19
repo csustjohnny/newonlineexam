@@ -5,14 +5,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csust.onlineexam.entity.Student;
 import com.csust.onlineexam.mapper.StudentMapper;
+import com.csust.onlineexam.service.impl.StudentServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Map;
 
 @SpringBootTest
 public class UserTest {
     @Autowired
     private StudentMapper studentMapper;
+    @Autowired
+    StudentServiceImpl studentService;
 
     @Test
     void insertTest(){
@@ -33,5 +38,13 @@ public class UserTest {
         System.out.println(studentPage.getPages());
         System.out.println(studentPage.getTotal());
         studentPage.getRecords().forEach(System.out::println);
+    }
+    @Test
+    void studentInfoTest(){
+        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("sex","男");
+        Page<Map<String,Object>> page = new Page<>(1, 5);
+        System.out.println(studentService.getStudentInfoList(page,queryWrapper));
+        studentMapper.getStudentInfoList(page,queryWrapper).forEach(System.out::println);
     }
 }

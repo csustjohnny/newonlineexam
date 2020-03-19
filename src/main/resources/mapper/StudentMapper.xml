@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csust.onlineexam.mapper.StudentMapper">
 
+
+    <select id="getStudentInfoList" resultType="java.util.Map">
+        select student_no,name ,sex,phone,qq,wechat,
+        class_name,department_name,school_name from t_student
+         left outer join t_class_info on t_student.class_id = t_class_info.class_id
+         left outer join t_department on t_class_info.department_id = t_department.department_id
+         left outer join t_school on t_department.school_code = t_school.school_code ${ew.customSqlSegment}
+    </select>
 </mapper>

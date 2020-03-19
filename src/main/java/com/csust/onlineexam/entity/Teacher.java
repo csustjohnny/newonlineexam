@@ -1,5 +1,6 @@
 package com.csust.onlineexam.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.io.Serializable;
@@ -28,7 +29,7 @@ public class Teacher extends Model<Teacher> {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonIgnore
+    @TableId
     private String teacherNo;
 
     private String teacherName;
@@ -37,6 +38,7 @@ public class Teacher extends Model<Teacher> {
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
     private String qq;

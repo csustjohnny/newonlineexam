@@ -10,11 +10,26 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +78,13 @@ public class AdminController {
         adminWelcome.setViewName("admin_welcome");
         return adminWelcome;
     }
+    @GetMapping("student_add")
+    @ApiOperation("学生添加界面")
+    public ModelAndView studentAdd() {
+        ModelAndView studentWelcome = new ModelAndView();
+        studentWelcome.setViewName("admin/student/student_add");
+        return studentWelcome;
+    }
 
     @GetMapping("/student_management")
     @ApiOperation("学生管理界面")
@@ -79,6 +101,13 @@ public class AdminController {
         teacherManagement.setViewName("admin/teacher/teacher_management");
         return teacherManagement;
     }
+    @GetMapping("teacher_add")
+    @ApiOperation("教师添加界面")
+    public ModelAndView teacherAdd() {
+        ModelAndView teacherAdd = new ModelAndView();
+        teacherAdd.setViewName("admin/teacher/teacher_add");
+        return teacherAdd;
+    }
 
     @GetMapping("institution_management")
     @ApiOperation("机构管理界面")
@@ -87,28 +116,144 @@ public class AdminController {
         modelAndView.setViewName("institution_management");
         return modelAndView;
     }
-
     @GetMapping("getAllStudents")
     @ApiOperation("获取所有学生信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页数", defaultValue = "1"),
+            @ApiImplicitParam(name = "schoolName", value = "所属学院"),
             @ApiImplicitParam(name = "limit", value = "每页数量大小", defaultValue = "10")
     })
     public Map<String,Object> getAllStudents(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
                                         @RequestParam(value = "limit", defaultValue = "10") Integer size,
-                                        @RequestParam(value = "school", required = false) String school) {
-        System.out.println(school);
+                                        @RequestParam(value = "schoolName", required = false) String schoolName) {
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select(Student.class,tableFieldInfo -> !"password".equals(tableFieldInfo.getColumn()));
-        Page<Student> page = new Page<>(pageNum, size);
+        Page<Map<String,Object>> page = new Page<>(pageNum, size);
         Map<String, Object> result = new HashMap<>(2);
         result.put("code",0);
-        Page<Student> studentPage = studentService.page(page, queryWrapper);
+        Page<Map<String,Object>> studentPage = studentService.getStudentInfoList(page, queryWrapper);
         result.put("data",studentPage.getRecords());
         result.put("count",studentPage.getTotal());
         return result;
     }
+    @GetMapping("/downloadTemplate/{fileType}")
+    @ApiOperation("下载用户导入信息模板")
+    @ApiImplicitParam(name = "fileType",value = "下载模板类型",defaultValue = "",required = true)
+    public ResponseEntity<byte[]> downloadTemplate(@PathVariable("fileType") int type) throws IOException {
+        String templatePath = "src/main/resources/static/other/";
+        String template;
+        switch (type) {
+            case 1:
+                template = "studentTemplate.xls";
+                break;
+            case 2:
+                template = "teacherTemplate.xls";
+                break;
+            case 3:
+                template = "adminTemplate.xls";
+                break;
+            default:
+                template = null;
+                break;
+        }
+        if (template == null) {
+            return null;
+        }
+        String fileName = templatePath + template;
+        File file = new File(fileName);
+        if (!file.exists()) {
+            System.out.println(file.createNewFile());
+        }
+        byte[] body;
+        InputStream is = new FileInputStream(file);
+        body = new byte[is.available()];
+        System.out.println(is.read(body));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attchement;filename=" + file.getName());
+        HttpStatus statusCode = HttpStatus.OK;
+        return new ResponseEntity<>(body, headers, statusCode);
+    }
+    /**
+     * 上传文件
+     *
+     * @param request 获取传输文件
+     * @return 传输结果
+     */
+    @PostMapping("/uploadTemplate/{type}")
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    @ApiOperation("上传文件接口")
+    public Result uploadTemplate(HttpServletRequest request, @PathVariable int type) throws IOException {
 
+        MultipartHttpServletRequest multipartHttpServletRequest =
+                (MultipartHttpServletRequest) request;
+        // 获取上传的文件
+        Map<String, String> message = new HashMap<>(1);
+        MultipartFile multiFile = multipartHttpServletRequest.getFile("file");
+        assert multiFile != null;
+        String fileName = multiFile.getOriginalFilename();
+        assert fileName != null;
+        InputStream fis = multiFile.getInputStream();
+        Workbook workbook = null;
+        System.out.println("xlsx".equals(fileName.split("\\.")[1]));
+        if("xlsx".equals(fileName.split("\\.")[1])) {
+            workbook = new XSSFWorkbook(fis);
+        } else {
+            workbook = new HSSFWorkbook(fis);
+        }
+        Sheet sheet = workbook.getSheetAt(0);
+        DataFormatter formatter = new DataFormatter();
+        if(type==1) {
+            //批量插入学生信息
+            Map<String, Integer> classList = new HashMap<>(20);
+            List<ClassInfo> list = classInfoService.list();
+            for (ClassInfo classInfo : list) {
+                classList.put(classInfo.getClassName(), classInfo.getClassId());
+            }
+
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                Row row = sheet.getRow(i);
+                Student student = new Student();
+                student.setStudentNo(row.getCell(0).getStringCellValue().trim());
+                student.setName(row.getCell(1).getStringCellValue().trim());
+                student.setSex(row.getCell(2).getStringCellValue().trim());
+                student.setPhone(formatter.formatCellValue(row.getCell(3)).trim());
+                student.setClassId(classList.get(row.getCell(4).getStringCellValue().trim()));
+                student.setQq(formatter.formatCellValue(row.getCell(5)).trim());
+                student.setWechat(formatter.formatCellValue(row.getCell(6)).trim());
+                System.out.println(row.getPhysicalNumberOfCells());
+                if (row.getPhysicalNumberOfCells() < 8) {
+                    student.setPassword(new BCryptPasswordEncoder().encode(row.getCell(0).getStringCellValue().trim()));
+                } else {
+                    student.setPassword(new BCryptPasswordEncoder().encode(formatter.formatCellValue(row.getCell(7)).trim()));
+                }
+                studentService.saveOrUpdate(student);
+
+            }
+        } else if(type==2){
+            //批量插入教师信息
+            for(int i=1;i < sheet.getPhysicalNumberOfRows(); i++){
+                Row row = sheet.getRow(i);
+                if(row.getCell(0)==null ||  "".equals(row.getCell(0).getStringCellValue())){
+                    break;
+                }
+                Teacher teacher = new Teacher();
+                teacher.setTeacherNo(formatter.formatCellValue(row.getCell(0)).trim());
+                teacher.setTeacherName(row.getCell(1).getStringCellValue());
+                teacher.setPhone(formatter.formatCellValue(row.getCell(2)).trim());
+                teacher.setEmail(row.getCell(3).getStringCellValue());
+                teacher.setQq(formatter.formatCellValue(row.getCell(4)).trim());
+                teacher.setWechat(formatter.formatCellValue(row.getCell(5)).trim());
+                if(row.getPhysicalNumberOfCells() < 7){
+                    teacher.setPassword(new BCryptPasswordEncoder().encode(row.getCell(0).getStringCellValue()));
+                } else {
+                    teacher.setPassword(new BCryptPasswordEncoder().encode(row.getCell(6).getStringCellValue()));
+                }
+                teacherService.saveOrUpdate(teacher);
+            }
+        }
+        fis.close();
+        return Result.success();
+    }
     @GetMapping("getAllInstitution")
     @ApiOperation("获取所有机构信息")
     public List<InstitutionInfo> getAllInstitution() {
@@ -170,9 +315,9 @@ public class AdminController {
             @ApiImplicitParam(name = "id",value = "修改的id",required = true),
             @ApiImplicitParam(name = "type",value = "修改的类型（1：学院，2：部门，3：班级）",required = true),
             @ApiImplicitParam(name = "name",value = "修改的名称",required = true),
-            @ApiImplicitParam(name = "classNo",value = "修改的班级编号",required = false),
-            @ApiImplicitParam(name = "description",value = "描述",required = false),
-            @ApiImplicitParam(name = "headTeacher",value = "班主任",required = false)
+            @ApiImplicitParam(name = "classNo",value = "修改的班级编号"),
+            @ApiImplicitParam(name = "description",value = "描述"),
+            @ApiImplicitParam(name = "headTeacher",value = "班主任")
 
     })
     public Result updateNode(@RequestParam("id") int id,

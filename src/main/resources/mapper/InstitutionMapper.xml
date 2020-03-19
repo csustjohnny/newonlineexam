@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csust.onlineexam.mapper.InstitutionMapper">
+    <resultMap id="InstitutionInfo" type="com.csust.onlineexam.entity.InstitutionInfo">
+        <association property="school" javaType="com.csust.onlineexam.entity.School">
+            <id column="school_code" jdbcType="INTEGER" javaType="INTEGER" property="schoolCode"/>
+            <result column="school_name" jdbcType="VARCHAR" javaType="String" property="schoolName"/>
+        </association>
+        <collection property="departmentInfoList" ofType="DepartmentInfo"
+            select="selectDepartmentInfoBySchoolCode" column="school_code">
+            <association property="department" javaType="com.csust.onlineexam.entity.Department">
+                <result column="department_code" javaType="Integer" jdbcType="INTEGER" property="departmentId"/>
+                <result column="department_name" javaType="VARCHAR" jdbcType="java.lang.String" property="departmentName"/>
+            </association>
+        </collection>
+    </resultMap>
+    <resultMap id="departmentInfoResult" type="com.csust.onlineexam.entity.DepartmentInfo">
+        <association property="department" javaType="com.csust.onlineexam.entity.Department">
+            <id column="department_id" jdbcType="INTEGER" property="departmentId"/>
+            <result column="department_name" javaType="String" jdbcType="VARCHAR" property="departmentName"/>
+            <result column="school_code" jdbcType="INTEGER" javaType="Integer" property="schoolCode"/>
+        </association>
+        <collection property="classInfoList" ofType="ClassInfo" javaType="java.util.List"
+                    select="selectClassByDepartmentId" column="department_id">
+        </collection>
+    </resultMap>
+    <select id="selectSchoolDepartmentInfoBySchoolCode" parameterType="Integer" resultMap="InstitutionInfo">
+        select * from t_school where school_code = #{schoolCode}
+    </select>
+    <select id="selectDepartmentInfoBySchoolCode" parameterType="Integer" resultMap="departmentInfoResult">
+        select * from t_department where school_code = #{schoolCode}
+    </select>
+    <select id="selectClassByDepartmentId" parameterType="int" resultType="com.csust.onlineexam.entity.ClassInfo">
+        select * from t_class_info where department_id = #{department_id}
+    </select>
+    <select id="getAllSchoolCode" resultType="java.lang.Integer">
+        select school_code from t_school
+    </select>
+</mapper>

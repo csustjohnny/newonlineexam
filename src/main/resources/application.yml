@@ -1,0 +1,15 @@
+server:
+  port: 8882
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/online_exam?serverTimezone=UTC
+    username: root
+    password: shanyunbiao
+  flyway:
+    baseline-on-migrate: true
+mybatis:
+  type-aliases-package: true
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml

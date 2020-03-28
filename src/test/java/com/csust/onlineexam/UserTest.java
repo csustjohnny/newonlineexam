@@ -23,12 +23,18 @@ public class UserTest {
     void insertTest(){
         Student student = new Student();
         student.setName("单云彪");
+//        student.setStudentNo(null);
         student.setStudentNo("201616080307");
-        student.setClassId(1);
+//        student.setClassId(1);
         student.setSex("男");
         student.setPhone("18507318074");
         student.setPassword("$2a$10$9EYMVmVLDDOoCcN5xmpW4OE8FVaf3CN55ccDucn6w0u0JIazX.Xje");
-        studentMapper.insert(student);
+        try {
+            studentMapper.insert(student);
+        }catch (Exception e){
+            System.out.println(e.getClass());
+            e.printStackTrace();
+        }
     }
     @Test
     void testPage(){
@@ -42,7 +48,7 @@ public class UserTest {
     @Test
     void studentInfoTest(){
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("sex","男");
+        queryWrapper.eq("department_name","软件工程系");
         Page<Map<String,Object>> page = new Page<>(1, 5);
         System.out.println(studentService.getStudentInfoList(page,queryWrapper));
         studentMapper.getStudentInfoList(page,queryWrapper).forEach(System.out::println);

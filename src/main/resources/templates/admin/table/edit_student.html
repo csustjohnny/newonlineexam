@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">学号</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="studentNo" name="studentNo" readonly
+                       value="" class="layui-input" disabled>
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">姓名</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="name" name="name" lay-verify="required" lay-reqtext="姓名不能为空" placeholder="请输入姓名" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="男" title="男" checked="">
+            <input type="radio" name="sex" value="女" title="女">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">手机</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="number" id="phone" name="phone" placeholder="请输入手机" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">qq</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="qq" name="qq" placeholder="请输入qq" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">微信</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="wechat" name="wechat" placeholder="请输入微信" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <!--<div class="layui-form-item">
+        <label class="layui-form-label">邮箱</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="email" id="email" name="email" placeholder="请输入邮箱" value="" class="layui-input">
+            </label>
+        </div>
+    </div>-->
+    <div class="layui-form-item">
+        <label class="layui-form-label required">班级</label>
+        <div class="layui-input-block">
+            <label>
+                <select name="classId" id="classId" lay-verify="required" lay-search="">
+                    <option value="">直接选择或搜索选择</option>
+                </select>
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">密码</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" name="password" placeholder="（不填则不修改）" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery.cookie.js"></script>
+
+<script>
+    $(function(){
+        $.cookie.json = true;
+        $.ajax({
+            type:"get",
+            async: false,
+            url: "/admin/getClassInfoList",
+            success: function(data){
+                for (let i = 0; i < data.length; i++) {
+                    $("#classId").append("<option value=\""+
+                        data[i].classId +"\">"+ data[i].className + "</option>");
+                }
+            }
+        });
+        let data = $.cookie('test');
+        $('#studentNo').val(data.studentNo);
+        $('#name').val(data.name);
+        $("input[name='sex'][value="+data.sex+"]").attr("checked",true);
+        $('#phone').val(data.phone);
+        $('#qq').val(data.qq);
+        $('#wechat').val(data.wechat);
+        $("#classId").find("option:contains('"+data.class_name +"')").attr("selected", true);
+    });
+    layui.use(['form','layer'], function () {
+        let form = layui.form,
+            layer = layui.layer;
+            //$ = layui.$;
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            console.log(data.field);
+            data.field.type = 1;
+            layer.confirm('您确定要保存修改吗？保存后以前的内容将会消失', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                //确定
+                $.ajax({
+                    type:'post'
+                    ,url:'/admin/saveOrUpdateOneStudent?type=1'
+                    ,data: JSON.stringify(data.field)
+                    ,dataType: "json"
+                    ,contentType: "application/json"
+                    ,success: function (data) {
+                        layer.msg(data.message);
+                        console.log(data);
+                    }
+                });
+            }, function(){
+                //取消
+            });
+            /*let index = layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            }, function () {
+
+                // 关闭弹出层
+                layer.close(index);
+
+                let iframeIndex = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(iframeIndex);
+
+            });*/
+
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

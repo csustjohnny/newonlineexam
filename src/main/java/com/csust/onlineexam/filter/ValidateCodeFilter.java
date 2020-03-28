@@ -34,8 +34,6 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
         if (httpServletRequest.getRequestURI().contains("/login") && httpServletRequest.getMethod().toUpperCase().equals("POST")) {
             String code = httpServletRequest.getParameter("validateCode");
             String sessionCode = (String) httpServletRequest.getSession().getAttribute("checkCode");
-            System.out.println(sessionCode);
-
             try {
                 if (code == null) {
                     throw new AuthenticationServiceException("请输入验证码");
@@ -48,7 +46,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
                 loginFailureHandler.onAuthenticationFailure(httpServletRequest, httpServletResponse, e);
                 return;
             }
-            UserServiceImpl.USER_TYPE = Integer.valueOf(httpServletRequest.getParameter("userType").toString());
+            UserServiceImpl.USER_TYPE = Integer.valueOf(httpServletRequest.getParameter("userType"));
 
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);

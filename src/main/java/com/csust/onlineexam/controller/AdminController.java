@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,18 +75,31 @@ public class AdminController {
     @GetMapping("welcome")
     @ApiOperation("管理员首页界面")
     public ModelAndView adminWelcome() {
-        ModelAndView adminWelcome = new ModelAndView();
+        ModelAndView adminWelcome = new  ModelAndView();
         adminWelcome.setViewName("admin_welcome");
         return adminWelcome;
     }
-    @GetMapping("student_add")
-    @ApiOperation("学生添加界面")
-    public ModelAndView studentAdd() {
+    @GetMapping("student_batch_add")
+    @ApiOperation("学生批量导入界面")
+    public ModelAndView studentBatchAdd() {
         ModelAndView studentWelcome = new ModelAndView();
         studentWelcome.setViewName("admin/student/student_add");
         return studentWelcome;
     }
-
+    @GetMapping("add_student_table")
+    @ApiOperation("学生单个添加界面")
+    public ModelAndView studentSingleAdd() {
+        ModelAndView studentWelcome = new ModelAndView();
+        studentWelcome.setViewName("admin/table/add_student");
+        return studentWelcome;
+    }
+    @GetMapping("edit_student_table")
+    @ApiOperation("编辑单个学生界面")
+    public ModelAndView studentSingleEdit(){
+        ModelAndView studentEditTable = new ModelAndView();
+        studentEditTable.setViewName("admin/table/edit_student");
+        return studentEditTable;
+    }
     @GetMapping("/student_management")
     @ApiOperation("学生管理界面")
     public ModelAndView studentManagement() {
@@ -109,6 +123,7 @@ public class AdminController {
         return teacherAdd;
     }
 
+
     @GetMapping("institution_management")
     @ApiOperation("机构管理界面")
     public ModelAndView institutionManagement() {
@@ -121,12 +136,25 @@ public class AdminController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页数", defaultValue = "1"),
             @ApiImplicitParam(name = "schoolName", value = "所属学院"),
+            @ApiImplicitParam(name = "className", value = "所属班级名称"),
+            @ApiImplicitParam(name = "studentName", value = "姓名"),
             @ApiImplicitParam(name = "limit", value = "每页数量大小", defaultValue = "10")
     })
     public Map<String,Object> getAllStudents(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
                                         @RequestParam(value = "limit", defaultValue = "10") Integer size,
+                                        @RequestParam(value = "className", required = false) String className,
+                                        @RequestParam(value = "studentName", required = false) String studentName,
                                         @RequestParam(value = "schoolName", required = false) String schoolName) {
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+        if(studentName!=null && !"".equals(studentName)){
+            queryWrapper.like("name",studentName);
+        }
+        if(className!=null && !"".equals(className)){
+            queryWrapper.eq("class_name",className);
+        }
+        if (schoolName != null && !"".equals(schoolName)) {
+            queryWrapper.eq("school_name",schoolName);
+        }
         Page<Map<String,Object>> page = new Page<>(pageNum, size);
         Map<String, Object> result = new HashMap<>(2);
         result.put("code",0);
@@ -134,6 +162,11 @@ public class AdminController {
         result.put("data",studentPage.getRecords());
         result.put("count",studentPage.getTotal());
         return result;
+    }
+    @ApiOperation("获取班级信息")
+    @GetMapping("/getClassInfoList")
+    public List<ClassInfo> getClassInfoList(){
+        return classInfoService.list();
     }
     @GetMapping("/downloadTemplate/{fileType}")
     @ApiOperation("下载用户导入信息模板")
@@ -254,6 +287,51 @@ public class AdminController {
         fis.close();
         return Result.success();
     }
+    @PostMapping("/deleteBatchStudents")
+    @ApiOperation("批量删除学生")
+    @ApiImplicitParam(name = "studentList",value = "要删除的学生列表")
+    @Transactional(rollbackFor = Exception.class)
+    public Result deleteBatchStudents(@RequestBody List<Student> studentList){
+        if(studentList.size()==0){
+            return Result.failure(ResultCode.PARAMS_INCORRECT);
+        }
+        List<String> idList = new ArrayList<>();
+        studentList.forEach(student -> idList.add(student.getStudentNo()));
+        studentService.removeByIds(idList);
+        return Result.success();
+    }
+    @PostMapping("/deleteOneStudent")
+    @ApiOperation("删除单个学生")
+    @ApiImplicitParam(name = "studentNo",value = "学号",required = true)
+    public Result deleteOnStudent(@RequestParam(name = "studentNo") String studentNo){
+        return studentService.removeById(studentNo)?Result.success():Result.failure(ResultCode.DELETE_FAILURE);
+    }
+    @PostMapping("saveOrUpdateOneStudent")
+    @ApiOperation("添加或更新单个学生信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "student", value = "学生信息",required = true),
+            @ApiImplicitParam(name = "type", value = "类型(0添加，1更新)",required = true),
+    })
+    public Result addOneStudent(@RequestBody Student student,
+                                @RequestParam int type){
+        //添加已有学号返回错误信息
+        if(type==0 && studentService.getById(student.getStudentNo())!=null){
+            return Result.failure(ResultCode.INSERT_DUPLICATE);
+        }
+        if (student.getPassword()==null || "".equals(student.getPassword())){
+            student.setPassword(new BCryptPasswordEncoder().encode(student.getStudentNo()));
+        } else {
+            System.out.println(student.getPassword());
+            student.setPassword(new BCryptPasswordEncoder().encode(student.getPassword()));
+        }
+        try{
+            studentService.saveOrUpdate(student);
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.failure(ResultCode.INSERT_FAILURE);
+        }
+        return Result.success();
+    }
     @GetMapping("getAllInstitution")
     @ApiOperation("获取所有机构信息")
     public List<InstitutionInfo> getAllInstitution() {
@@ -263,12 +341,17 @@ public class AdminController {
     @GetMapping("getAllTeachers")
     @ApiOperation("获取所有教师信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "当前页数", defaultValue = "1"),
-            @ApiImplicitParam(name = "size", value = "每页数量大小", defaultValue = "10")
+            @ApiImplicitParam(name = "page", value = "当前页数", defaultValue = "1",required = true),
+            @ApiImplicitParam(name = "size", value = "每页数量大小", defaultValue = "10",required = true),
+            @ApiImplicitParam(name = "teacherName", value = "姓名")
     })
     public IPage<Teacher> getAllTeachers(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
-                                         @RequestParam(value = "size", defaultValue = "10") Integer size) {
+                                         @RequestParam(value = "size", defaultValue = "10") Integer size,
+                                         @RequestParam(value = "teacherName",required = false) String teacherName) {
         QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
+        if(teacherName!=null && !"".equals(teacherName)){
+            queryWrapper.like("teacher_name",teacherName);
+        }
         queryWrapper.select(Teacher.class,tableFieldInfo -> !"password".equals(tableFieldInfo.getColumn()));
         Page<Teacher> page = new Page<>(pageNum, size);
         return teacherService.getBaseMapper().selectPage(page, queryWrapper);

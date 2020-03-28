@@ -1,5 +1,6 @@
 package com.csust.onlineexam.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.io.Serializable;
@@ -28,6 +29,7 @@ public class Admin extends Model<Admin> {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId
     private Integer adminNo;
 
     private String adminName;

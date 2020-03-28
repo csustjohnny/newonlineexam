@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2020-03-18
  */
 @RestController
-@RequestMapping("/student")
+@RequestMapping("student")
 public class StudentController {
 
 }

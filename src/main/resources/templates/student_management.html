@@ -24,25 +24,19 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">学院</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="username" autocomplete="off" class="layui-input">
+                                <input type="text" name="schoolName" placeholder="(如：计算机与通信工程学院）" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <label class="layui-form-label">专业</label>
+                            <label class="layui-form-label">专业班级</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="sex" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label">班级</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="city" autocomplete="off" class="layui-input">
+                                <input type="text" placeholder="（如：软件工程1603班）" name="className" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">姓名</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="classify" autocomplete="off" class="layui-input">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -73,6 +67,8 @@
 </div>
 
 <script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery.cookie.js"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
@@ -91,9 +87,8 @@
                 icon: 'layui-icon-tips'
             }]
             , cols: [
-                [
-                    {type: "checkbox", width: 50, fixed: "left"}
-                    , {field: 'student_no', width: 130, title: '学号', sort: true}
+                [   {type: "checkbox", width: 50, fixed: "left"}
+                    , {field: 'studentNo', width: 130, title: '学号', sort: true}
                     , {field: 'name', width: 80, title: '姓名'}
                     , {field: 'sex', width: 80, title: '性别'}
                     , {field: 'phone', width: 130, title: '电话'}
@@ -101,13 +96,120 @@
                     , {field: 'wechat', width: 130, title: '微信'}
                     , {field: 'class_name', width: 130, title: '班级'}
                     , {field: 'department_name', width: 130, title: '专业'}
-                    , {field: 'school_name', width: 150, title: '学院'}
+                    , {field: 'school_name', width: 150, title: '学院',hide:true}
                     ,{title: '操作', minWidth: 50, templet: '#currentTableBar', fixed: "right", align: "center"}
                 ]
             ]
-            , limits: [10, 15, 20, 25, 50, 100]
+            , initSort: {
+                field: 'studentNo',
+                type: 'asc'
+            }
+            , limits: [5,10, 15, 20, 25, 50]
             , limit: 15
             , page: true
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            data = data.field;
+            //执行搜索重载
+            table.reload('currentTableId', {
+                url: '/admin/getAllStudents'
+                ,page: {
+                    curr: 1
+                }
+                , where: {
+                    schoolName: data.schoolName,
+                    className: data.className,
+                    studentName: data.name
+                }
+            }, 'data');
+            return false;
+        });
+        // 监听添加操作
+        $(".data-add-btn").on("click", function () {
+
+            let index = layer.open({
+                title: '添加学生',
+                type: 2,
+                shade: 0.2,
+                maxmin: true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: 'add_student_table',
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+            return false;
+        });
+        // 监听删除多行操作
+        $(".data-delete-btn").on("click", function () {
+            let checkStatus = table.checkStatus('currentTableId')
+                , data = checkStatus.data;
+            if(data.length === 0){
+                layer.alert("请先选择要删除的项目");
+                return ;
+            }
+            layer.confirm('真的要删除所选行么？此操作不可撤回', function (index) {
+                $.ajax({
+                    type:"post"
+                    , url: "/admin/deleteBatchStudents"
+                    , dataType: "json"
+                    , contentType: "application/json"
+                    ,data: JSON.stringify(data)
+                    , success: function(data){
+                        if(data.message==='success'){
+                            layer.msg("删除成功");
+                            location.reload();
+                        } else {
+                            layer.alert(data.message);
+                        }
+                    }
+                });
+                layer.close(index);
+            });
+        });
+        //编辑和删除单行操作
+        table.on('tool(currentTableFilter)', function (obj) {
+            let data = obj.data;
+            $.cookie.json = true;
+            if (obj.event === 'edit') {
+
+                $.cookie('test',data);
+                let index = layer.open({
+                    title: '编辑用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/admin/edit_student_table',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    $.ajax({
+                        type: 'post'
+                        , url: "/admin/deleteOneStudent"
+                        , data: {
+                            "studentNo":data.studentNo
+                        }
+                        ,dataType: "json"
+                        , success: function(data){
+                            if(data.message==="success"){
+                                layer.alert("删除成功");
+                                obj.del();
+                            } else {
+                                layer.alert(data.message);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
         });
     });
 </script>

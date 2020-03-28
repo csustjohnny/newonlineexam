@@ -88,8 +88,8 @@
               "target": "_self"
             },
             {
-              "title": "学生信息导入",
-              "href": "student_add",
+              "title": "学生信息批量导入",
+              "href": "student_batch_add",
               "icon": "fa fa-calendar",
               "target": "_self"
             }

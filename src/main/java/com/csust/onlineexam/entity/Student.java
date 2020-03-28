@@ -12,6 +12,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.Size;
+
 /**
  * <p>
  * 
@@ -30,6 +32,7 @@ public class Student extends Model<Student> {
     private static final long serialVersionUID = 1L;
 
     @TableId
+    @Size(max = 10)
     private String studentNo;
 
     private String name;
@@ -38,7 +41,6 @@ public class Student extends Model<Student> {
 
     private String phone;
 
-    @JsonIgnore
     private Integer classId;
 
     private String qq;

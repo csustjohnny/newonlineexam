@@ -81,7 +81,7 @@
 
         table.render({
             elem: '#test'
-            , url: '/admin/getAllStudent'
+            , url: '/admin/getAllTeachers'
             , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             , defaultToolbar: ['filter', 'exports', 'print', {
                 title: '提示',
@@ -90,8 +90,8 @@
             }]
             , cols: [
                 [
-                    {field: 'studentNo', width: 130, title: '学号', sort: true}
-                    , {field: 'name', width: 80, title: '姓名'}
+                    {field: 'teacherNo', width: 130, title: '教师号', sort: true}
+                    , {field: 'teacherName', width: 80, title: '姓名'}
                     , {field: 'sex', width: 80, title: '性别', sort: true}
                     , {field: 'phone', width: 130, title: '电话'}
                     , {field: 'className', width: 130, title: '班级'}

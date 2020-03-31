@@ -33,12 +33,13 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
         //判断是否为登录请求
         if (httpServletRequest.getRequestURI().contains("/login") && httpServletRequest.getMethod().toUpperCase().equals("POST")) {
             String code = httpServletRequest.getParameter("validateCode");
-            String sessionCode = (String) httpServletRequest.getSession().getAttribute("checkCode");
+            String sessionCode = httpServletRequest.getSession().getAttribute("checkCode").toString();
+
             try {
                 if (code == null) {
                     throw new AuthenticationServiceException("请输入验证码");
                 }
-                if (!code.trim().toUpperCase().equals(sessionCode.toUpperCase())) {
+                if (sessionCode==null || !code.trim().toUpperCase().equals(sessionCode.toUpperCase())) {
                     throw new AuthenticationServiceException("验证码不正确");
                 }
             } catch (AuthenticationException e) {

@@ -62,8 +62,7 @@
             , bindAction: '#test9'
             , done: function (res) {
                 layer.closeAll('loading'); //关闭loading
-                layer.msg('上传成功');
-                console.log(res);
+                layer.msg(res.message);
             }
         });
     });

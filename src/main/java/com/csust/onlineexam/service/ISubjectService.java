@@ -1,6 +1,6 @@
 package com.csust.onlineexam.service;
 
-import com.csust.onlineexam.entity.Teacher;
+import com.csust.onlineexam.entity.Subject;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author johnNick
- * @since 2020-03-28
+ * @since 2020-03-31
  */
-public interface ITeacherService extends IService<Teacher> {
+public interface ISubjectService extends IService<Subject> {
 
 }

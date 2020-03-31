@@ -18,10 +18,10 @@
 <div class="layui-form layuimini-form">
 
     <div class="layui-form-item">
-        <label class="layui-form-label">学号</label>
+        <label class="layui-form-label">教师号</label>
         <div class="layui-input-block">
             <label>
-                <input type="text" id="studentNo" name="studentNo" readonly
+                <input type="text" id="teacherNo" name="teacherNo" readonly
                        value="" class="layui-input" disabled>
             </label>
         </div>
@@ -30,7 +30,7 @@
         <label class="layui-form-label">姓名</label>
         <div class="layui-input-block">
             <label>
-                <input type="text" id="name" name="name" lay-verify="required" lay-reqtext="姓名不能为空" placeholder="请输入姓名" value=""
+                <input type="text" id="teacherName" name="teacherName" lay-verify="required" lay-reqtext="姓名不能为空" placeholder="请输入姓名" value=""
                        class="layui-input">
             </label>
         </div>
@@ -68,15 +68,15 @@
             </label>
         </div>
     </div>
-    <!--<div class="layui-form-item">
+    <div class="layui-form-item">
         <label class="layui-form-label">邮箱</label>
         <div class="layui-input-block">
             <label>
                 <input type="email" id="email" name="email" placeholder="请输入邮箱" value="" class="layui-input">
             </label>
         </div>
-    </div>-->
-    <div class="layui-form-item">
+    </div>
+   <!-- <div class="layui-form-item">
         <label class="layui-form-label required">班级</label>
         <div class="layui-input-block">
             <label>
@@ -85,7 +85,7 @@
                 </select>
             </label>
         </div>
-    </div>
+    </div>-->
     <div class="layui-form-item">
         <label class="layui-form-label">密码</label>
         <div class="layui-input-block">
@@ -107,25 +107,14 @@
 <script>
     $(function(){
         $.cookie.json = true;
-        $.ajax({
-            type:"get",
-            async: false,
-            url: "/admin/getClassInfoList",
-            success: function(data){
-                for (let i = 0; i < data.length; i++) {
-                    $("#classId").append("<option value=\""+
-                        data[i].classId +"\">"+ data[i].className + "</option>");
-                }
-            }
-        });
         let data = $.cookie('test');
-        $('#studentNo').val(data.studentNo);
-        $('#name').val(data.name);
+        $('#teacherNo').val(data.teacherNo);
+        $('#teacherName').val(data.teacherName);
         $("input[name='sex'][value="+data.sex+"]").attr("checked",true);
         $('#phone').val(data.phone);
         $('#qq').val(data.qq);
         $('#wechat').val(data.wechat);
-        $("#classId").find("option:contains('"+data.class_name +"')").attr("selected", true);
+        $('#email').val(data.email);
     });
     layui.use(['form','layer'], function () {
         let form = layui.form,
@@ -141,7 +130,7 @@
                 //确定
                 $.ajax({
                     type:'post'
-                    ,url:'/admin/saveOrUpdateOneStudent?type=1'
+                    ,url:'/admin/saveOrUpdateOneTeacher?type=1'
                     ,data: JSON.stringify(data.field)
                     ,dataType: "json"
                     ,contentType: "application/json"

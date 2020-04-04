@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csust.onlineexam.entity.Student;
+import com.csust.onlineexam.entity.Subject;
 import com.csust.onlineexam.mapper.StudentMapper;
 import com.csust.onlineexam.service.impl.StudentServiceImpl;
+import com.csust.onlineexam.service.impl.SubjectServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +20,8 @@ public class UserTest {
     private StudentMapper studentMapper;
     @Autowired
     StudentServiceImpl studentService;
+    @Autowired
+    SubjectServiceImpl subjectService;
 
     @Test
     void insertTest(){
@@ -52,5 +56,11 @@ public class UserTest {
         Page<Map<String,Object>> page = new Page<>(1, 5);
         System.out.println(studentService.getStudentInfoList(page,queryWrapper));
         studentMapper.getStudentInfoList(page,queryWrapper).forEach(System.out::println);
+    }
+    @Test
+    public void testSubject(){
+        Subject subject = new Subject();
+        subject.setCourseName("软件工程");
+        subjectService.save(subject);
     }
 }

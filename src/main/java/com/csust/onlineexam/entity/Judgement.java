@@ -1,9 +1,7 @@
 package com.csust.onlineexam.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,26 +15,35 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author johnNick
- * @since 2020-04-01
+ * @since 2020-04-03
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("t_subject")
-@ApiModel(value="Subject对象", description="")
-public class Subject extends Model<Subject> {
+@TableName("t_judgement")
+@ApiModel(value="Judgement对象", description="")
+public class Judgement extends Model<Judgement> {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "subject_id", type = IdType.AUTO)
-    private Integer subjectId;
+    private Integer id;
 
-    private String courseName;
+    private String title;
+
+    private Boolean answer;
+
+    private String knowledgePoint;
+
+    private Integer level;
+
+    private String createTeacher;
+
+    private Integer subjectSubordinate;
 
 
     @Override
     protected Serializable pkVal() {
-        return this.subjectId;
+        return this.id;
     }
 
 }

@@ -3939,8 +3939,10 @@ layui.define(function (e) {
         return f.skin ? " " + f.skin + " " + f.skin + "-" + e : ""
     };
     r.prompt = function (e, t) {
+
         var a = "";
         if (e = e || {}, "function" == typeof e && (t = e), e.area) {
+            console.log(t);
             var o = e.area;
             a = 'style="width: ' + o[0] + "; height: " + o[1] + ';"', delete e.area
         }
@@ -3971,6 +3973,7 @@ layui.define(function (e) {
             resize: !1,
             title: function () {
                 var e = t.length, i = 1, a = "";
+                console.log(a);
                 if (e > 0) for (a = '<span class="' + n + '">' + t[0].title + "</span>"; i < e; i++) a += "<span>" + t[i].title + "</span>";
                 return a
             }(),

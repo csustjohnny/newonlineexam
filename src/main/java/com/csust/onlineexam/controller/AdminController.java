@@ -2,7 +2,6 @@ package com.csust.onlineexam.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csust.onlineexam.entity.*;
 import com.csust.onlineexam.service.impl.*;
@@ -14,8 +13,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +23,14 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.csust.onlineexam.util.FileRelate.getTemplate;
 
 /**
  * <p>
@@ -54,14 +51,20 @@ public class AdminController {
     private final SchoolServiceImpl schoolService;
     private final DepartmentServiceImpl departmentService;
     private final ClassInfoServiceImpl classInfoService;
+    private final SubjectServiceImpl subjectService;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @Autowired
-    public AdminController(StudentServiceImpl studentService, InstitutionServiceImpl institutionService, TeacherServiceImpl teacherService, SchoolServiceImpl schoolService, DepartmentServiceImpl departmentService, ClassInfoServiceImpl classInfoService) {
+    public AdminController(StudentServiceImpl studentService, InstitutionServiceImpl institutionService, TeacherServiceImpl teacherService,
+                           SchoolServiceImpl schoolService, DepartmentServiceImpl departmentService, ClassInfoServiceImpl classInfoService,
+                           SubjectServiceImpl subjectService) {
         this.studentService = studentService;
         this.institutionService = institutionService;
         this.teacherService = teacherService;
         this.schoolService = schoolService;
         this.departmentService = departmentService;
         this.classInfoService = classInfoService;
+        this.subjectService = subjectService;
     }
 
     @GetMapping("/index")
@@ -75,10 +78,11 @@ public class AdminController {
     @GetMapping("welcome")
     @ApiOperation("管理员首页界面")
     public ModelAndView adminWelcome() {
-        ModelAndView adminWelcome = new  ModelAndView();
+        ModelAndView adminWelcome = new ModelAndView();
         adminWelcome.setViewName("admin_welcome");
         return adminWelcome;
     }
+
     @GetMapping("student_batch_add")
     @ApiOperation("学生批量导入界面")
     public ModelAndView studentBatchAdd() {
@@ -86,6 +90,7 @@ public class AdminController {
         studentWelcome.setViewName("admin/student/student_add");
         return studentWelcome;
     }
+
     @GetMapping("add_student_table")
     @ApiOperation("学生单个添加界面")
     public ModelAndView studentSingleAdd() {
@@ -93,6 +98,7 @@ public class AdminController {
         studentWelcome.setViewName("admin/table/add_student");
         return studentWelcome;
     }
+
     @GetMapping("add_teacher_table")
     @ApiOperation("教师单个添加界面")
     public ModelAndView teacherSingleAdd() {
@@ -100,26 +106,37 @@ public class AdminController {
         teacherAddView.setViewName("admin/table/add_teacher");
         return teacherAddView;
     }
+
     @GetMapping("edit_student_table")
     @ApiOperation("编辑单个学生界面")
-    public ModelAndView studentSingleEdit(){
+    public ModelAndView studentSingleEdit() {
         ModelAndView studentEditTable = new ModelAndView();
         studentEditTable.setViewName("admin/table/edit_student");
         return studentEditTable;
     }
+
     @GetMapping("edit_teacher_table")
     @ApiOperation("编辑单个教师界面")
-    public ModelAndView teacherSingleEdit(){
+    public ModelAndView teacherSingleEdit() {
         ModelAndView teacherEditTable = new ModelAndView();
         teacherEditTable.setViewName("admin/table/edit_teacher");
         return teacherEditTable;
     }
+
     @GetMapping("/student_management")
     @ApiOperation("学生管理界面")
     public ModelAndView studentManagement() {
         ModelAndView studentManagement = new ModelAndView();
         studentManagement.setViewName("student_management");
         return studentManagement;
+    }
+
+    @GetMapping("/subject_management")
+    @ApiOperation("学科管理界面")
+    public ModelAndView subjectManagement() {
+        ModelAndView subjectManagement = new ModelAndView();
+        subjectManagement.setViewName("admin/subject_management");
+        return subjectManagement;
     }
 
     @GetMapping("teacher_management")
@@ -129,6 +146,7 @@ public class AdminController {
         teacherManagement.setViewName("admin/teacher/teacher_management");
         return teacherManagement;
     }
+
     @GetMapping("teacher_add")
     @ApiOperation("教师添加界面")
     public ModelAndView teacherAdd() {
@@ -145,6 +163,15 @@ public class AdminController {
         modelAndView.setViewName("institution_management");
         return modelAndView;
     }
+
+    @GetMapping("choiceQuestion_management")
+    @ApiOperation("选择题管理界面")
+    public ModelAndView choiceQuestionManagement() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/admin/question/choiceQuestion_management");
+        return modelAndView;
+    }
+
     @GetMapping("getAllStudents")
     @ApiOperation("获取所有学生信息")
     @ApiImplicitParams({
@@ -154,37 +181,39 @@ public class AdminController {
             @ApiImplicitParam(name = "studentName", value = "姓名"),
             @ApiImplicitParam(name = "limit", value = "每页数量大小", defaultValue = "10")
     })
-    public Map<String,Object> getAllStudents(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
-                                        @RequestParam(value = "limit", defaultValue = "10") Integer size,
-                                        @RequestParam(value = "className", required = false) String className,
-                                        @RequestParam(value = "studentName", required = false) String studentName,
-                                        @RequestParam(value = "schoolName", required = false) String schoolName) {
+    public Map<String, Object> getAllStudents(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+                                              @RequestParam(value = "limit", defaultValue = "10") Integer size,
+                                              @RequestParam(value = "className", required = false) String className,
+                                              @RequestParam(value = "studentName", required = false) String studentName,
+                                              @RequestParam(value = "schoolName", required = false) String schoolName) {
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        if(studentName!=null && !"".equals(studentName)){
-            queryWrapper.like("name",studentName);
+        if (studentName != null && !"".equals(studentName)) {
+            queryWrapper.like("name", studentName);
         }
-        if(className!=null && !"".equals(className)){
-            queryWrapper.eq("class_name",className);
+        if (className != null && !"".equals(className)) {
+            queryWrapper.eq("class_name", className);
         }
         if (schoolName != null && !"".equals(schoolName)) {
-            queryWrapper.eq("school_name",schoolName);
+            queryWrapper.eq("school_name", schoolName);
         }
-        Page<Map<String,Object>> page = new Page<>(pageNum, size);
+        Page<Map<String, Object>> page = new Page<>(pageNum, size);
         Map<String, Object> result = new HashMap<>(2);
-        result.put("code",0);
-        Page<Map<String,Object>> studentPage = studentService.getStudentInfoList(page, queryWrapper);
-        result.put("data",studentPage.getRecords());
-        result.put("count",studentPage.getTotal());
+        result.put("code", 0);
+        Page<Map<String, Object>> studentPage = studentService.getStudentInfoList(page, queryWrapper);
+        result.put("data", studentPage.getRecords());
+        result.put("count", studentPage.getTotal());
         return result;
     }
+
     @ApiOperation("获取班级信息")
     @GetMapping("/getClassInfoList")
-    public List<ClassInfo> getClassInfoList(){
+    public List<ClassInfo> getClassInfoList() {
         return classInfoService.list();
     }
+
     @GetMapping("/downloadTemplate/{fileType}")
     @ApiOperation("下载用户导入信息模板")
-    @ApiImplicitParam(name = "fileType",value = "下载模板类型",defaultValue = "",required = true)
+    @ApiImplicitParam(name = "fileType", value = "下载模板类型", defaultValue = "", required = true)
     public ResponseEntity<byte[]> downloadTemplate(@PathVariable("fileType") int type) throws IOException {
         String templatePath = "src/main/resources/static/other/";
         String template;
@@ -205,20 +234,9 @@ public class AdminController {
         if (template == null) {
             return null;
         }
-        String fileName = templatePath + template;
-        File file = new File(fileName);
-        if (!file.exists()) {
-            System.out.println(file.createNewFile());
-        }
-        byte[] body;
-        InputStream is = new FileInputStream(file);
-        body = new byte[is.available()];
-        System.out.println(is.read(body));
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attchement;filename=" + file.getName());
-        HttpStatus statusCode = HttpStatus.OK;
-        return new ResponseEntity<>(body, headers, statusCode);
+        return getTemplate(templatePath, template);
     }
+
     /**
      * 上传文件
      *
@@ -234,22 +252,21 @@ public class AdminController {
         MultipartHttpServletRequest multipartHttpServletRequest =
                 (MultipartHttpServletRequest) request;
         // 获取上传的文件
-        Map<String, String> message = new HashMap<>(1);
-        MultipartFile multiFile = multipartHttpServletRequest.getFile("file");
+        MultipartFile multiFile = ((MultipartHttpServletRequest) request).getFile("file");
         assert multiFile != null;
         String fileName = multiFile.getOriginalFilename();
         assert fileName != null;
         InputStream fis = multiFile.getInputStream();
-        Workbook workbook = null;
+        Workbook workbook;
         System.out.println("xlsx".equals(fileName.split("\\.")[1]));
-        if("xlsx".equals(fileName.split("\\.")[1])) {
+        if ("xlsx".equals(fileName.split("\\.")[1])) {
             workbook = new XSSFWorkbook(fis);
         } else {
             workbook = new HSSFWorkbook(fis);
         }
         Sheet sheet = workbook.getSheetAt(0);
         DataFormatter formatter = new DataFormatter();
-        if(type==1) {
+        if (type == 1) {
             //批量插入学生信息
             Map<String, Integer> classList = new HashMap<>(20);
             List<ClassInfo> list = classInfoService.list();
@@ -259,6 +276,7 @@ public class AdminController {
 
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
                 Row row = sheet.getRow(i);
+                System.out.println(row.getPhysicalNumberOfCells());
                 Student student = new Student();
                 student.setStudentNo(row.getCell(0).getStringCellValue().trim());
                 student.setName(row.getCell(1).getStringCellValue().trim());
@@ -267,20 +285,23 @@ public class AdminController {
                 student.setClassId(classList.get(row.getCell(4).getStringCellValue().trim()));
                 student.setQq(formatter.formatCellValue(row.getCell(5)).trim());
                 student.setWechat(formatter.formatCellValue(row.getCell(6)).trim());
-                System.out.println(row.getPhysicalNumberOfCells());
+
                 if (row.getPhysicalNumberOfCells() < 8) {
-                    student.setPassword(new BCryptPasswordEncoder().encode(row.getCell(0).getStringCellValue().trim()));
+                    System.out.println(row.getCell(0).getStringCellValue().trim());
+                    student.setPassword(passwordEncoder.encode(row.getCell(0).getStringCellValue().trim()));
                 } else {
-                    student.setPassword(new BCryptPasswordEncoder().encode(formatter.formatCellValue(row.getCell(7)).trim()));
+                    System.out.println(formatter.formatCellValue(row.getCell(7)).trim());
+                    student.setPassword(passwordEncoder.encode(formatter.formatCellValue(row.getCell(7)).trim()));
                 }
                 studentService.saveOrUpdate(student);
 
             }
-        } else if(type==2){
+        } else if (type == 2) {
             //批量插入教师信息
-            for(int i=1;i < sheet.getPhysicalNumberOfRows(); i++){
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
                 Row row = sheet.getRow(i);
-                if(row.getCell(0)==null ||  "".equals(row.getCell(0).getStringCellValue())){
+                System.out.println("281: " + row.getPhysicalNumberOfCells());
+                if (row.getCell(0) == null || "".equals(row.getCell(0).getStringCellValue())) {
                     break;
                 }
                 Teacher teacher = new Teacher();
@@ -290,10 +311,11 @@ public class AdminController {
                 teacher.setEmail(row.getCell(3).getStringCellValue());
                 teacher.setQq(formatter.formatCellValue(row.getCell(4)).trim());
                 teacher.setWechat(formatter.formatCellValue(row.getCell(5)).trim());
-                if(row.getPhysicalNumberOfCells() < 7){
+                teacher.setSex(formatter.formatCellValue(row.getCell(6)).trim());
+                if (row.getPhysicalNumberOfCells() < 8) {
                     teacher.setPassword(new BCryptPasswordEncoder().encode(row.getCell(0).getStringCellValue()));
                 } else {
-                    teacher.setPassword(new BCryptPasswordEncoder().encode(row.getCell(6).getStringCellValue()));
+                    teacher.setPassword(new BCryptPasswordEncoder().encode(formatter.formatCellValue(row.getCell(7)).trim()));
                 }
                 teacherService.saveOrUpdate(teacher);
             }
@@ -301,12 +323,13 @@ public class AdminController {
         fis.close();
         return Result.success();
     }
+
     @PostMapping("/deleteBatchStudents")
     @ApiOperation("批量删除学生")
-    @ApiImplicitParam(name = "studentList",value = "要删除的学生列表")
+    @ApiImplicitParam(name = "studentList", value = "要删除的学生列表")
     @Transactional(rollbackFor = Exception.class)
-    public Result deleteBatchStudents(@RequestBody List<Student> studentList){
-        if(studentList.size()==0){
+    public Result deleteBatchStudents(@RequestBody List<Student> studentList) {
+        if (studentList.size() == 0) {
             return Result.failure(ResultCode.PARAMS_INCORRECT);
         }
         List<String> idList = new ArrayList<>();
@@ -314,137 +337,95 @@ public class AdminController {
         studentService.removeByIds(idList);
         return Result.success();
     }
-    @PostMapping("/deleteBatchTeachers")
-    @ApiOperation("批量删除教师")
-    @ApiImplicitParam(name = "teacherList",value = "要删除的教师列表")
-    @Transactional(rollbackFor = Exception.class)
-    public Result deleteBatchTeachers(@RequestBody List<Teacher> teacherList){
-        if(teacherList.size()==0){
-            return Result.failure(ResultCode.PARAMS_INCORRECT);
-        }
-        List<String> teacherNos = new ArrayList<>();
-        teacherList.forEach(teacher -> teacherNos.add(teacher.getTeacherNo()));
-        teacherService.removeByIds(teacherNos);
-        return Result.success();
-    }
+
     @PostMapping("/deleteOneStudent")
     @ApiOperation("删除单个学生")
-    @ApiImplicitParam(name = "studentNo",value = "学号",required = true)
-    public Result deleteOneStudent(@RequestParam(name = "studentNo") String studentNo){
-        return studentService.removeById(studentNo)?Result.success():Result.failure(ResultCode.DELETE_FAILURE);
-    }
-    @PostMapping("/deleteOneTeacher")
-    @ApiOperation("删除单个教师")
-    @ApiImplicitParam(name = "teacherNo",value = "教师号",required = true)
-    public Result deleteOneTeacher(@RequestParam(name = "teacherNo") String teacherNo){
-        return teacherService.removeById(teacherNo)?Result.success():Result.failure(ResultCode.DELETE_FAILURE);
+    @ApiImplicitParam(name = "studentNo", value = "学号", required = true)
+    public Result deleteOneStudent(@RequestParam(name = "studentNo") String studentNo) {
+        return studentService.removeById(studentNo) ? Result.success() : Result.failure(ResultCode.DELETE_FAILURE);
     }
 
     @PostMapping("saveOrUpdateOneStudent")
     @ApiOperation("添加或更新单个学生信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "student", value = "学生信息",required = true),
-            @ApiImplicitParam(name = "type", value = "类型(0添加，1更新)",required = true),
+            @ApiImplicitParam(name = "student", value = "学生信息", required = true),
+            @ApiImplicitParam(name = "type", value = "类型(0添加，1更新)", required = true),
     })
     public Result addOneStudent(@RequestBody Student student,
-                                @RequestParam int type){
+                                @RequestParam int type) {
         //添加已有学号返回错误信息
-        if(type==0 && studentService.getById(student.getStudentNo().trim())!=null){
+        if (type == 0 && studentService.getById(student.getStudentNo().trim()) != null) {
             return Result.failure(ResultCode.INSERT_DUPLICATE);
         }
-        if (student.getPassword()==null || "".equals(student.getPassword().trim())){
+        if (student.getPassword() == null || "".equals(student.getPassword().trim())) {
             student.setPassword(new BCryptPasswordEncoder().encode(student.getStudentNo()));
         } else {
             student.setPassword(new BCryptPasswordEncoder().encode(student.getPassword()));
         }
-        try{
+        try {
             studentService.saveOrUpdate(student);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return Result.failure(ResultCode.INSERT_FAILURE);
         }
         return Result.success();
     }
-    @PostMapping("saveOrUpdateOneTeacher")
-    @ApiOperation("添加或更新单个教师信息")
+
+    @PostMapping("saveOrUpdateOneSubject")
+    @ApiOperation("添加或更新单个学科信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "teacher", value = "教师信息",required = true),
-            @ApiImplicitParam(name = "type", value = "类型(0添加，1更新)",required = true),
+            @ApiImplicitParam(name = "subject", value = "学科信息", required = true),
+            @ApiImplicitParam(name = "type", value = "类型(0添加，1更新)", required = true),
     })
-    public Result saveOrUpdateTeacher(@RequestBody Teacher teacher,
-                                      @RequestParam int type){
-        if(type==0 && teacherService.getById(teacher.getTeacherNo()) != null){
+    public Result saveOrUpdateSubject(@RequestBody Subject subject,
+                                      @RequestParam int type) {
+        //添加已有学科返回错误信息
+        System.out.println(subject);
+        if (type == 0 && subjectService.getOne(new QueryWrapper<Subject>().eq("course_name", subject.getCourseName())) != null) {
             return Result.failure(ResultCode.INSERT_DUPLICATE);
         }
-        if (teacher.getPassword()==null || "".equals(teacher.getPassword())){
-            teacher.setPassword(new BCryptPasswordEncoder().encode(teacher.getTeacherNo()));
-        } else {
-            System.out.println(teacher.getPassword());
-            teacher.setPassword(new BCryptPasswordEncoder().encode(teacher.getPassword()));
-        }
-        try{
-            teacherService.saveOrUpdate(teacher);
-        }catch(Exception e){
+        try {
+            subjectService.saveOrUpdate(subject);
+        } catch (Exception e) {
             e.printStackTrace();
             return Result.failure(ResultCode.INSERT_FAILURE);
         }
         return Result.success();
     }
+
     @GetMapping("getAllInstitution")
     @ApiOperation("获取所有机构信息")
     public List<InstitutionInfo> getAllInstitution() {
         return institutionService.getAllInstitutionInfo();
     }
 
-    @GetMapping("getAllTeachers")
-    @ApiOperation("获取所有教师信息")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "当前页数", defaultValue = "1",required = true),
-            @ApiImplicitParam(name = "limit", value = "每页数量大小", defaultValue = "10",required = true),
-            @ApiImplicitParam(name = "teacherName", value = "姓名")
-    })
-    public Map<String,Object> getAllTeachers(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
-                                         @RequestParam(value = "limit", defaultValue = "10") Integer size,
-                                         @RequestParam(value = "teacherName",required = false) String teacherName) {
-        QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
-        Map<String,Object> result = new HashMap<>(5);
-        if(teacherName!=null && !"".equals(teacherName)){
-            queryWrapper.like("teacher_name",teacherName);
-        }
-        //queryWrapper.select(Teacher.class,tableFieldInfo -> !"password".equals(tableFieldInfo.getColumn()));
-        Page<Teacher> page = new Page<>(pageNum, size);
-        Page<Teacher> teacherPage = teacherService.page(page,queryWrapper);
-        result.put("code",0);
-        result.put("data",teacherPage.getRecords());
-        result.put("count",teacherPage.getTotal());
-        return result;
-    }
+
     @PostMapping("addNode")
     @ApiOperation("添加机构")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "type",value = "添加类型（0：学院，1：机构，2：班级）",required = true),
-            @ApiImplicitParam(name = "id",value = "所属父id",required = true),
-            @ApiImplicitParam(name = "childName",value = "要添加的id",required = true),
-            @ApiImplicitParam(name = "classNo",value = "班级编号"),
+            @ApiImplicitParam(name = "type", value = "添加类型（0：学院，1：机构，2：班级）", required = true),
+            @ApiImplicitParam(name = "id", value = "所属父id", required = true),
+            @ApiImplicitParam(name = "childName", value = "要添加的id", required = true),
+            @ApiImplicitParam(name = "classNo", value = "班级编号"),
     })
     public int addNode(@RequestParam("type") int type,
-                           @RequestParam("id") int parentId,
-                           @RequestParam("childName") String childName,
-                           @RequestParam(value = "classNo", required = false) String classNo){
-        if(type==0){
+                       @RequestParam("id") int parentId,
+                       @RequestParam("childName") String childName,
+                       @RequestParam(value = "classNo", required = false) String classNo) {
+        if (type == 0) {
             //添加学院
             School school = new School();
             school.setSchoolName(childName);
             schoolService.save(school);
             return school.getSchoolCode();
-        } else if(type == 1){
+        } else if (type == 1) {
             //添加学院下属机构
             Department department = new Department();
             department.setDepartmentName(childName);
             department.setSchoolCode(parentId);
             departmentService.save(department);
             return department.getDepartmentId();
-        } else if(type == 2){
+        } else if (type == 2) {
             //添加班级
             ClassInfo classInfo = new ClassInfo();
             classInfo.setClassName(childName);
@@ -455,31 +436,31 @@ public class AdminController {
         }
         return -1;
     }
+
     @PostMapping("updateNode")
     @ApiOperation("更新节点信息")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id",value = "修改的id",required = true),
-            @ApiImplicitParam(name = "type",value = "修改的类型（1：学院，2：部门，3：班级）",required = true),
-            @ApiImplicitParam(name = "name",value = "修改的名称",required = true),
-            @ApiImplicitParam(name = "classNo",value = "修改的班级编号"),
-            @ApiImplicitParam(name = "description",value = "描述"),
-            @ApiImplicitParam(name = "headTeacher",value = "班主任")
-
+            @ApiImplicitParam(name = "id", value = "修改的id", required = true),
+            @ApiImplicitParam(name = "type", value = "修改的类型（1：学院，2：部门，3：班级）", required = true),
+            @ApiImplicitParam(name = "name", value = "修改的名称", required = true),
+            @ApiImplicitParam(name = "classNo", value = "修改的班级编号"),
+            @ApiImplicitParam(name = "description", value = "描述"),
+            @ApiImplicitParam(name = "headTeacher", value = "班主任")
     })
     public Result updateNode(@RequestParam("id") int id,
-                              @RequestParam("type") int type,
-                              @RequestParam("name") String name,
-                              @RequestParam(value = "description",required = false) String description,
-                              @RequestParam(value = "headTeacher",required = false) String headTeacher,
-                              @RequestParam(value = "classNo", required = false) String classNo){
+                             @RequestParam("type") int type,
+                             @RequestParam("name") String name,
+                             @RequestParam(value = "description", required = false) String description,
+                             @RequestParam(value = "headTeacher", required = false) String headTeacher,
+                             @RequestParam(value = "classNo", required = false) String classNo) {
 
-        if(type==1){
+        if (type == 1) {
             //更新学院信息
             School school = new School();
             school.setSchoolName(name);
             school.setSchoolCode(id);
-            return schoolService.updateById(school)?Result.success():Result.failure(ResultCode.UPDATE_FAILURE);
-        } else if(type == 2){
+            return schoolService.updateById(school) ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
+        } else if (type == 2) {
             //更新部门信息
             Department department = new Department();
             department.setDepartmentId(id);
@@ -487,8 +468,8 @@ public class AdminController {
             if (description != null) {
                 department.setDepartmentDescription(description);
             }
-            return departmentService.updateById(department)?Result.success():Result.failure(ResultCode.UPDATE_FAILURE);
-        } else if(type==3){
+            return departmentService.updateById(department) ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
+        } else if (type == 3) {
             //更新班级信息
             ClassInfo classInfo = new ClassInfo();
             classInfo.setClassId(id);
@@ -499,17 +480,59 @@ public class AdminController {
                     classInfo.setTeacher(
                             teacherService.getOne(
                                     new QueryWrapper<Teacher>()
-                                            .eq("teacher_name",headTeacher))
+                                            .eq("teacher_name", headTeacher))
                                     .getTeacherNo());
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
-                    return new Result(29999,"教师信息不正确");
+                    return new Result(29999, "教师信息不正确");
                 }
             }
-            return classInfoService.updateById(classInfo)?Result.success():Result.failure(ResultCode.UPDATE_FAILURE);
+            return classInfoService.updateById(classInfo) ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
         }
         return null;
     }
 
+    @GetMapping("getAllSubjects")
+    @ApiOperation("获取所有科目")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "当前页数", defaultValue = "1"),
+            @ApiImplicitParam(name = "keywords", value = "关键词"),
+            @ApiImplicitParam(name = "limit", value = "每页数量大小", defaultValue = "10")
+    })
+    public Map<String, Object> getAllSubjects(@RequestParam(name = "page", defaultValue = "1") int pageNum,
+                                              @RequestParam(name = "limit", defaultValue = "10") int limit,
+                                              @RequestParam(name = "keywords", required = false) String keywords) {
+        QueryWrapper<Subject> queryWrapper = new QueryWrapper<>();
+        if (keywords != null && !"".equals(keywords)) {
+            queryWrapper.like("course_name", keywords);
+        }
+        Page<Subject> page = new Page<>(pageNum, limit);
+        Map<String, Object> result = new HashMap<>(5);
+        result.put("code", 0);
+        Page<Subject> studentPage = subjectService.page(page, queryWrapper);
+        result.put("data", studentPage.getRecords());
+        result.put("count", studentPage.getTotal());
+        return result;
+    }
 
+    @PostMapping("/deleteBatchSubjects")
+    @ApiOperation("批量删除学科")
+    @ApiImplicitParam(name = "subjectList", value = "要删除的学科列表")
+    @Transactional(rollbackFor = Exception.class)
+    public Result deleteBatchSubjects(@RequestBody List<Subject> subjectList) {
+        if (subjectList.size() == 0) {
+            return Result.failure(ResultCode.PARAMS_INCORRECT);
+        }
+        List<Integer> idList = new ArrayList<>();
+        subjectList.forEach(subject -> idList.add(subject.getSubjectId()));
+        subjectService.removeByIds(idList);
+        return Result.success();
+    }
+
+    @PostMapping("/deleteOneSubject")
+    @ApiOperation("删除单个学科")
+    @ApiImplicitParam(name = "subjectId", value = "学号", required = true)
+    public Result deleteOneSubject(@RequestParam(name = "subjectId") String subjectId) {
+        return subjectService.removeById(subjectId) ? Result.success() : Result.failure(ResultCode.DELETE_FAILURE);
+    }
 }

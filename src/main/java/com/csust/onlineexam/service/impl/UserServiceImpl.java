@@ -47,16 +47,18 @@ public class UserServiceImpl implements UserDetailsService {
             if(student == null){
                 throw new UsernameNotFoundException("用户账号不存在");
             }
-            return new User(student.getName(),student.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_STUDENT"));
+            return new User(student.getStudentNo(),student.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_STUDENT"));
         } else if (USER_TYPE == 1){
             //教师登录
             /*QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("teacher_no",s);*/
+            System.out.println(s);
             Teacher teacher = teacherMapper.selectById(s);
             if(teacher == null){
                 throw new UsernameNotFoundException("用户账号不存在");
             }
-            return new User(teacher.getTeacherName(),teacher.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_TEACHER"));
+            System.out.println(teacher);
+            return new User(teacher.getTeacherNo(),teacher.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_TEACHER"));
         } else {
             //管理员登录
             QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();

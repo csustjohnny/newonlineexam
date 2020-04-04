@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Layui</title>
+    <title>学科管理界面</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
@@ -21,12 +21,11 @@
             <div style="margin: 10px 10px 10px 10px">
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
+
                         <div class="layui-inline">
-                            <label class="layui-form-label">姓名</label>
+                            <label class="layui-form-label">学科名称关键词</label>
                             <div class="layui-input-inline">
-                                <label>
-                                    <input type="text" name="teacherName" autocomplete="off" class="layui-input">
-                                </label>
+                                <input type="text" name="keywords" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -59,7 +58,6 @@
 <script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
 <script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
 <script src="/lib/jquery-3.4.1/jquery.cookie.js"></script>
-
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
@@ -69,7 +67,7 @@
 
         table.render({
             elem: '#currentTableId'
-            , url: '/admin/teacher/getAllTeachers'
+            , url: '/admin/getAllSubjects'
             , toolbar: '#toolbarDemo'
             , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             , defaultToolbar: ['filter', 'exports', 'print', {
@@ -79,52 +77,53 @@
             }]
             , cols: [
                 [   {type: "checkbox", width: 50, fixed: "left"}
-                    , {field: 'teacherNo', width: 130, title: '教师号', sort: true}
-                    , {field: 'teacherName', width: 90, title: '姓名'}
-                    , {field: 'sex', width: 80, title: '性别', sort: true}
-                    , {field: 'phone', width: 130, title: '电话'}
-                    , {field: 'email', width: 170, title: '邮箱'}
-                    , {field: 'qq', width: 130, title: 'qq'}
-                    , {field: 'wechat', width: 150, title: '微信'}
+                    , {field: 'subjectId', width: 130, title: '学科ID', sort: true}
+                    , {field: 'courseName', width: 130, title: '学科名称'}
                     ,{title: '操作', minWidth: 50, templet: '#currentTableBar', fixed: "right", align: "center"}
                 ]
             ]
             , initSort: {
-                field: 'teacherNo',
+                field: 'subjectId',
                 type: 'asc'
             }
-            , limit:30
+            , limits: [5,10, 15, 20, 25, 50]
+            , limit: 15
             , page: true
         });
-
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
             data = data.field;
             //执行搜索重载
             table.reload('currentTableId', {
-                url: '/admin/teacher/getAllTeachers'
+                url: '/admin/getAllSubjects'
                 ,page: {
                     curr: 1
                 }
                 , where: {
-                    teacherName: data.teacherName
+                    keywords: data.keywords
                 }
             }, 'data');
             return false;
         });
         // 监听添加操作
         $(".data-add-btn").on("click", function () {
-            let index = layer.open({
-                title: '添加教师',
-                type: 2,
-                shade: 0.2,
-                maxmin: true,
-                shadeClose: true,
-                area: ['100%', '100%'],
-                content: 'add_teacher_table',
-            });
-            $(window).on("resize", function () {
-                layer.full(index);
+            layer.prompt({title: '输入学科名', formType: 0}, function(pass, index){
+                layer.close(index);
+                $.ajax({
+                    type: 'post'
+                    , url: '/admin/saveOrUpdateOneSubject?type=0'
+                    , data: JSON.stringify({
+                        courseName : pass,
+                    })
+                    , dataType: "json"
+                    , contentType: "application/json"
+                    , success: function (data) {
+                        layer.alert(data.message);
+                        if(data.code === 200){
+                            table.reload('currentTableId');
+                        }
+                    }
+                });
             });
             return false;
         });
@@ -139,8 +138,8 @@
             layer.confirm('真的要删除所选行么？此操作不可撤回', function (index) {
                 $.ajax({
                     type:"post"
-                    , url: "/admin/teacher/deleteBatchTeachers"
-                    , dataType:    "json"
+                    , url: "/admin/deleteBatchSubjects"
+                    , dataType: "json"
                     , contentType: "application/json"
                     ,data: JSON.stringify(data)
                     , success: function(data){
@@ -160,33 +159,39 @@
             let data = obj.data;
             $.cookie.json = true;
             if (obj.event === 'edit') {
+                //iframe层-父子操作
+                //prompt层
+                layer.prompt({title: '请输入修改后的科目名称', formType: 0}, function(pass, index){
+                    layer.close(index);
+                    $.ajax({
+                        type: 'post'
+                        , url: "/admin/saveOrUpdateOneSubject?type=1"
+                        , data: JSON.stringify({
+                            "subjectId":data.subjectId,
+                            "courseName": pass
+                        })
+                        ,dataType: "json"
+                        , contentType: "application/json"
+                        , success: function(data){
+                                layer.msg(data.message);
+                                location.reload();
+                        }
+                    });
+                });
 
-                $.cookie('test',data);
-                let index = layer.open({
-                    title: '编辑用户',
-                    type: 2,
-                    shade: 0.2,
-                    maxmin: true,
-                    shadeClose: true,
-                    area: ['100%', '100%'],
-                    content: '/admin/edit_teacher_table',
-                });
-                $(window).on("resize", function () {
-                    layer.full(index);
-                });
                 return false;
             } else if (obj.event === 'delete') {
                 layer.confirm('真的删除行么', function (index) {
                     $.ajax({
                         type: 'post'
-                        , url: "/admin/teacher/deleteOneTeacher"
+                        , url: "/admin/deleteOneSubject"
                         , data: {
-                            "teacherNo":data.teacherNo
+                            "subjectId":data.subjectId
                         }
                         ,dataType: "json"
                         , success: function(data){
                             if(data.code===200){
-                                layer.alert(data.message);
+                                layer.alert("删除成功");
                                 obj.del();
                             } else {
                                 layer.alert(data.message);
@@ -198,7 +203,6 @@
             }
         });
     });
-
 </script>
 
 </body>

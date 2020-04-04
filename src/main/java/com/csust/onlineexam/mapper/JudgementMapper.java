@@ -1,6 +1,6 @@
 package com.csust.onlineexam.mapper;
 
-import com.csust.onlineexam.entity.Subject;
+import com.csust.onlineexam.entity.Judgement;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author johnNick
- * @since 2020-04-01
+ * @since 2020-04-03
  */
-public interface SubjectMapper extends BaseMapper<Subject> {
+public interface JudgementMapper extends BaseMapper<Judgement> {
 
 }

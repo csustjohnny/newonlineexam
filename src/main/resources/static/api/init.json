@@ -31,7 +31,7 @@
             },
             {
               "title": "科目管理",
-              "href": "page/welcome-2.html",
+              "href": "/admin/subject_management",
               "icon": "fa fa-tachometer",
               "target": "_self"
             },
@@ -95,12 +95,58 @@
             }
 
           ]
+        }
+      ]
+    },
+    "question_management": {
+      "title": "考试管理中心",
+      "icon": "fa fa-slideshare",
+      "child": [
+        {
+          "title": "常规题管理",
+          "href": "",
+          "icon": "fa fa-meetup",
+          "target": "",
+          "child": [
+            {
+              "title": "选择题管理",
+              "href": "choiceQuestion_management",
+              "icon": "fa fa-calendar",
+              "target": "_self"
+            },
+            {
+              "title": "判断题管理",
+              "href": "student_batch_add",
+              "icon": "fa fa-calendar",
+              "target": "_self"
+            },
+            {
+              "title": "填空题管理",
+              "href": "student_batch_add",
+              "icon": "fa fa-calendar",
+              "target": "_self"
+            }
+
+          ]
         },
         {
-          "title": "考试信息",
+          "title": "编程题管理",
           "href": "page/error.html",
           "icon": "fa fa-superpowers",
           "target": "_self"
+        }
+      ,
+        {
+          "title": "考试管理",
+          "icon": "fa fa-superpowers",
+          "child": [
+            {
+              "title": "编程题管理",
+              "href": "page/error.html",
+              "icon": "fa fa-superpowers",
+              "target": "_self"
+            }
+          ]
         }
       ]
     }

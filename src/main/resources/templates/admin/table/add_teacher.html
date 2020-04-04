@@ -103,7 +103,7 @@
         //监听提交
         form.on('submit(saveBtn)', function (data) {
             $.ajax({
-                url: "/admin/saveOrUpdateOneTeacher?type=0",
+                url: "/admin/teacher/saveOrUpdateOneTeacher?type=0",
                 type: "post",
                 data: JSON.stringify(data.field),
                 dataType: "json",

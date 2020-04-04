@@ -76,16 +76,6 @@
             </label>
         </div>
     </div>
-   <!-- <div class="layui-form-item">
-        <label class="layui-form-label required">班级</label>
-        <div class="layui-input-block">
-            <label>
-                <select name="classId" id="classId" lay-verify="required" lay-search="">
-                    <option value="">直接选择或搜索选择</option>
-                </select>
-            </label>
-        </div>
-    </div>-->
     <div class="layui-form-item">
         <label class="layui-form-label">密码</label>
         <div class="layui-input-block">
@@ -130,7 +120,7 @@
                 //确定
                 $.ajax({
                     type:'post'
-                    ,url:'/admin/saveOrUpdateOneTeacher?type=1'
+                    ,url:'/admin/teacher/saveOrUpdateOneTeacher?type=1'
                     ,data: JSON.stringify(data.field)
                     ,dataType: "json"
                     ,contentType: "application/json"
@@ -141,17 +131,6 @@
             }, function(){
                 //取消
             });
-            /*let index = layer.alert(JSON.stringify(data.field), {
-                title: '最终的提交信息'
-            }, function () {
-
-                // 关闭弹出层
-                layer.close(index);
-
-                let iframeIndex = parent.layer.getFrameIndex(window.name);
-                parent.layer.close(iframeIndex);
-
-            });*/
 
             return false;
         });

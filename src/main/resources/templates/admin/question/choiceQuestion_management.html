@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Layui</title>
+    <title>选择题管理管理员端</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
@@ -22,10 +22,18 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">姓名</label>
+                            <label class="layui-form-label">题目</label>
                             <div class="layui-input-inline">
                                 <label>
-                                    <input type="text" name="teacherName" autocomplete="off" class="layui-input">
+                                    <input type="text" name="title" autocomplete="off" class="layui-input">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">知识点</label>
+                            <div class="layui-input-inline">
+                                <label>
+                                    <input type="text" name="knowledgePoint" autocomplete="off" class="layui-input">
                                 </label>
                             </div>
                         </div>
@@ -41,8 +49,9 @@
 
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm data-add-btn"> 添加用户</button>
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn"> 删除用户</button>
+                <button class="layui-btn layui-btn-sm data-add-btn"> 添加问题</button>
+                <button class="layui-btn layui-btn-sm data-batchAdd-btn"> 批量添加问题</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn"> 删除问题</button>
             </div>
         </script>
 
@@ -50,6 +59,7 @@
 
         <script type="text/html" id="currentTableBar">
             <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="review">预览</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
@@ -63,13 +73,13 @@
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 
 <script>
-    layui.use(['table','form'], function () {
+    layui.use(['table', 'form'], function () {
         let table = layui.table,
             form = layui.form;
 
         table.render({
             elem: '#currentTableId'
-            , url: '/admin/teacher/getAllTeachers'
+            , url: '/question/choiceQuestion/getAllChoiceQuestions'
             , toolbar: '#toolbarDemo'
             , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             , defaultToolbar: ['filter', 'exports', 'print', {
@@ -78,22 +88,27 @@
                 icon: 'layui-icon-tips'
             }]
             , cols: [
-                [   {type: "checkbox", width: 50, fixed: "left"}
-                    , {field: 'teacherNo', width: 130, title: '教师号', sort: true}
-                    , {field: 'teacherName', width: 90, title: '姓名'}
-                    , {field: 'sex', width: 80, title: '性别', sort: true}
-                    , {field: 'phone', width: 130, title: '电话'}
-                    , {field: 'email', width: 170, title: '邮箱'}
-                    , {field: 'qq', width: 130, title: 'qq'}
-                    , {field: 'wechat', width: 150, title: '微信'}
-                    ,{title: '操作', minWidth: 50, templet: '#currentTableBar', fixed: "right", align: "center"}
+                [{type: "checkbox", fixed: "left"}
+                    , {field: 'title', title: '题目', align: "center"}
+                    , {field: 'optionA', title: 'A选项', align: "center"}
+                    , {field: 'optionB', title: 'B选项', align: "center"}
+                    , {field: 'optionC', title: 'C选项', align: "center"}
+                    , {field: 'optionD', title: 'D选项', align: "center"}
+                    , {field: 'optionE', title: 'E选项', align: "center"}
+                    , {field: 'optionF', title: 'F选项', align: "center"}
+                    , {field: 'answer',  title: '答案', align: "center"}
+                    , {field: 'knowledgePoint', title: '知识点', hide:true, align: "center"}
+                    , {field: 'level', title: '难度指数', hide:true, align: "center"}
+                    , {field: 'isMultiple', title: '是否多选', hide: true, align: "center"}
+                    , {field: 'createTeacher', title: '创建老师', hide: true, align: "center"}
+                    , {title: '操作', minWidth: 180, templet: '#currentTableBar', fixed: "right", align: "center"}
                 ]
             ]
             , initSort: {
                 field: 'teacherNo',
                 type: 'asc'
             }
-            , limit:30
+            , limit: 30
             , page: true
         });
 
@@ -102,12 +117,13 @@
             data = data.field;
             //执行搜索重载
             table.reload('currentTableId', {
-                url: '/admin/teacher/getAllTeachers'
-                ,page: {
+                url: '/question/choiceQuestion/getAllChoiceQuestions'
+                , page: {
                     curr: 1
                 }
                 , where: {
-                    teacherName: data.teacherName
+                    title: data.title,
+                    knowledgePoint: data.knowledgePoint
                 }
             }, 'data');
             return false;
@@ -128,23 +144,27 @@
             });
             return false;
         });
+        //监听批量添加选择题操作
+        $(".data-batchAdd-btn").on("click",function(){
+
+        });
         // 监听删除多行操作
         $(".data-delete-btn").on("click", function () {
             let checkStatus = table.checkStatus('currentTableId')
                 , data = checkStatus.data;
-            if(data.length === 0){
+            if (data.length === 0) {
                 layer.alert("请先选择要删除的项目");
-                return ;
+                return;
             }
             layer.confirm('真的要删除所选行么？此操作不可撤回', function (index) {
                 $.ajax({
-                    type:"post"
+                    type: "post"
                     , url: "/admin/teacher/deleteBatchTeachers"
-                    , dataType:    "json"
+                    , dataType: "json"
                     , contentType: "application/json"
-                    ,data: JSON.stringify(data)
-                    , success: function(data){
-                        if(data.code===200){
+                    , data: JSON.stringify(data)
+                    , success: function (data) {
+                        if (data.code === 200) {
                             layer.msg("删除成功");
                             location.reload();
                         } else {
@@ -161,7 +181,7 @@
             $.cookie.json = true;
             if (obj.event === 'edit') {
 
-                $.cookie('test',data);
+                $.cookie('test', data);
                 let index = layer.open({
                     title: '编辑用户',
                     type: 2,
@@ -181,11 +201,11 @@
                         type: 'post'
                         , url: "/admin/teacher/deleteOneTeacher"
                         , data: {
-                            "teacherNo":data.teacherNo
+                            "teacherNo": data.teacherNo
                         }
-                        ,dataType: "json"
-                        , success: function(data){
-                            if(data.code===200){
+                        , dataType: "json"
+                        , success: function (data) {
+                            if (data.code === 200) {
                                 layer.alert(data.message);
                                 obj.del();
                             } else {
@@ -195,6 +215,8 @@
                     });
                     layer.close(index);
                 });
+            } else if (obj.event === 'review') {
+                layer.alert("预览");
             }
         });
     });

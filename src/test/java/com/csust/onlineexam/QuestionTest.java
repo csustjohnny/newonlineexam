@@ -1,7 +1,5 @@
 package com.csust.onlineexam;
 
-import com.csust.onlineexam.entity.Choicequestion;
-import com.csust.onlineexam.service.impl.ChoicequestionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,10 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest
 public class QuestionTest {
-    @Autowired
-    private ChoicequestionServiceImpl choicequestionService;
+   /* @Autowired
+    private ChoicequestionServiceImpl choicequestionService;*/
 
-   @Test
+  /* @Test
    public void testOptionQuestion(){
        Choicequestion choicequestion = new Choicequestion();
        choicequestion.setTitle("问题标题");
@@ -29,5 +27,5 @@ public class QuestionTest {
        choicequestion.setAnswer("B");
        choicequestion.setIsMultiple(false);
        choicequestionService.save(choicequestion);
-   }
+   }*/
 }

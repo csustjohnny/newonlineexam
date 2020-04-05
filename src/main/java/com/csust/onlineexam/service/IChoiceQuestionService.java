@@ -1,6 +1,6 @@
 package com.csust.onlineexam.service;
 
-import com.csust.onlineexam.entity.Choicequestion;
+import com.csust.onlineexam.entity.ChoiceQuestion;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author johnNick
- * @since 2020-04-04
+ * @since 2020-04-05
  */
-public interface IChoicequestionService extends IService<Choicequestion> {
+public interface IChoiceQuestionService extends IService<ChoiceQuestion> {
 
 }

@@ -18,14 +18,14 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author johnNick
- * @since 2020-04-04
+ * @since 2020-04-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("t_choicequestion")
-@ApiModel(value="Choicequestion对象", description="")
-public class Choicequestion extends Model<Choicequestion> {
+@TableName("t_choice_question")
+@ApiModel(value="ChoiceQuestion对象", description="")
+public class ChoiceQuestion extends Model<ChoiceQuestion> {
 
     private static final long serialVersionUID = 1L;
 

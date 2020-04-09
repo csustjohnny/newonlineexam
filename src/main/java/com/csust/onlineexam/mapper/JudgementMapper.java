@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author johnNick
- * @since 2020-04-03
+ * @since 2020-04-09
  */
 public interface JudgementMapper extends BaseMapper<Judgement> {
 

@@ -1,0 +1,13 @@
+.panel_qsn {
+    width: 95%;
+    padding-left: 30px;
+    background: #fafafa;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
+}
+#Container {
+    width: 1000px;
+    margin: 0 auto;
+    padding-top: 30px;
+}

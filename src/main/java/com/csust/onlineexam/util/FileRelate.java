@@ -23,6 +23,7 @@ import java.util.Map;
  * @modified By：
  */
 public class FileRelate {
+
     public static ResponseEntity<byte[]> getTemplate(String templatePath, String template) throws IOException {
         String fileName = templatePath + template;
         File file = new File(fileName);

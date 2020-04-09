@@ -1,5 +1,7 @@
 package com.csust.onlineexam;
 
+import com.csust.onlineexam.entity.ChoiceQuestion;
+import com.csust.onlineexam.service.impl.ChoiceQuestionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,20 +14,22 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest
 public class QuestionTest {
-   /* @Autowired
-    private ChoicequestionServiceImpl choicequestionService;*/
+    @Autowired
+    private ChoiceQuestionServiceImpl choiceQuestionService;
 
-  /* @Test
+   @Test
    public void testOptionQuestion(){
-       Choicequestion choicequestion = new Choicequestion();
-       choicequestion.setTitle("问题标题");
-       choicequestion.setOptionA("A选项");
-       choicequestion.setOptionB("B选项");
-       choicequestion.setOptionC("C选项");
-       choicequestion.setOptionD("D选项");
+       ChoiceQuestion choicequestion = new ChoiceQuestion();
+       choicequestion.setTitle("下面属性中，是事务(Transaction)属性的有____。");
+       choicequestion.setOptionA("原子性(Atomic)");
+       choicequestion.setOptionB("并发性(Concurrency) ");
+       choicequestion.setOptionC("一致性(Consistent) ");
+       choicequestion.setOptionD("隔离性(Isolated) ");
+       choicequestion.setOptionE("持久性(Durable)  ");
        choicequestion.setKnowledgePoint("");
-       choicequestion.setAnswer("B");
-       choicequestion.setIsMultiple(false);
-       choicequestionService.save(choicequestion);
-   }*/
+       choicequestion.setAnalysis("这是一个解析哦！");
+       choicequestion.setAnswer("A,C,D,E");
+       choicequestion.setIsMultiple(true);
+       choiceQuestionService.save(choicequestion);
+   }
 }

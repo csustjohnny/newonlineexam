@@ -79,7 +79,7 @@
 
         table.render({
             elem: '#currentTableId'
-            , url: '/question/choiceQuestion/getAllChoiceQuestions'
+            , url: '/question/choice-question/getAllChoiceQuestions'
             , toolbar: '#toolbarDemo'
             , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             , defaultToolbar: ['filter', 'exports', 'print', {
@@ -89,6 +89,7 @@
             }]
             , cols: [
                 [{type: "checkbox", fixed: "left"}
+                    , {field: 'id', title: 'ID', align: "center",hide: true}
                     , {field: 'title', title: '题目', align: "center"}
                     , {field: 'optionA', title: 'A选项', align: "center"}
                     , {field: 'optionB', title: 'B选项', align: "center"}
@@ -105,7 +106,7 @@
                 ]
             ]
             , initSort: {
-                field: 'teacherNo',
+                field: 'id',
                 type: 'asc'
             }
             , limit: 30
@@ -117,7 +118,7 @@
             data = data.field;
             //执行搜索重载
             table.reload('currentTableId', {
-                url: '/question/choiceQuestion/getAllChoiceQuestions'
+                url: '/question/choice-question/getAllChoiceQuestions'
                 , page: {
                     curr: 1
                 }
@@ -180,7 +181,6 @@
             let data = obj.data;
             $.cookie.json = true;
             if (obj.event === 'edit') {
-
                 $.cookie('test', data);
                 let index = layer.open({
                     title: '编辑用户',
@@ -189,7 +189,7 @@
                     maxmin: true,
                     shadeClose: true,
                     area: ['100%', '100%'],
-                    content: '/admin/edit_teacher_table',
+                    content: '/question/choice-question/editChoiceQuestion',
                 });
                 $(window).on("resize", function () {
                     layer.full(index);
@@ -199,9 +199,9 @@
                 layer.confirm('真的删除行么', function (index) {
                     $.ajax({
                         type: 'post'
-                        , url: "/admin/teacher/deleteOneTeacher"
+                        , url: "/question/choice-question/deleteOneChoiceQuestion"
                         , data: {
-                            "teacherNo": data.teacherNo
+                            "id": data.id
                         }
                         , dataType: "json"
                         , success: function (data) {
@@ -216,7 +216,23 @@
                     layer.close(index);
                 });
             } else if (obj.event === 'review') {
-                layer.alert("预览");
+                //iframe层-父子操作
+                let  data = obj.data;
+                $.cookie.json = true;
+                $.cookie('choiceQuestion',data,{path:'/'});
+                let index = layer.open({
+                    type: 2,
+                    title: "预览",
+                    area: ['100%', '100%'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    content: '/question/choice-question/showOneChoiceQuestion',
+                    btn: '确定'
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
             }
         });
     });

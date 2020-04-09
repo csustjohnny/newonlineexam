@@ -43,9 +43,7 @@ public class MybatisPlusGenerator {
         String dataUserName = "root";
         //连接用户密码
         String password = "shanyunbiao";
-        //要生成的表名
-        String[] tables= {"admin_table","teacher_table","student_table"};
-        //表名后缀
+        //表名前缀
         String prefix = "t_";
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();

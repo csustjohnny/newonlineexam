@@ -12,4 +12,8 @@ class OnlineexamApplicationTests {
         System.out.println(new BCryptPasswordEncoder().encode("123456"));
     }
 
+    @Test
+    public void testEndWith(){
+        //System.out.println("test.xls".endsWith("xlsx"));
+    }
 }

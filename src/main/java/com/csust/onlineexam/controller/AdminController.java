@@ -3,6 +3,7 @@ package com.csust.onlineexam.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.csust.onlineexam.constant.Constant;
 import com.csust.onlineexam.entity.*;
 import com.csust.onlineexam.service.impl.*;
 import io.swagger.annotations.Api;
@@ -213,7 +214,7 @@ public class AdminController {
 
     @GetMapping("/downloadTemplate/{fileType}")
     @ApiOperation("下载用户导入信息模板")
-    @ApiImplicitParam(name = "fileType", value = "下载模板类型", defaultValue = "", required = true)
+    @ApiImplicitParam(name = "fileType", value = "下载模板类型", required = true)
     public ResponseEntity<byte[]> downloadTemplate(@PathVariable("fileType") int type) throws IOException {
         String templatePath = "src/main/resources/static/other/";
         String template;
@@ -249,8 +250,6 @@ public class AdminController {
     @ApiOperation("上传文件接口")
     public Result uploadTemplate(HttpServletRequest request, @PathVariable int type) throws IOException {
 
-        MultipartHttpServletRequest multipartHttpServletRequest =
-                (MultipartHttpServletRequest) request;
         // 获取上传的文件
         MultipartFile multiFile = ((MultipartHttpServletRequest) request).getFile("file");
         assert multiFile != null;
@@ -259,7 +258,7 @@ public class AdminController {
         InputStream fis = multiFile.getInputStream();
         Workbook workbook;
         System.out.println("xlsx".equals(fileName.split("\\.")[1]));
-        if ("xlsx".equals(fileName.split("\\.")[1])) {
+        if (fileName.endsWith(Constant.XLSX_SUFFIX)) {
             workbook = new XSSFWorkbook(fis);
         } else {
             workbook = new HSSFWorkbook(fis);
@@ -300,7 +299,6 @@ public class AdminController {
             //批量插入教师信息
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
                 Row row = sheet.getRow(i);
-                System.out.println("281: " + row.getPhysicalNumberOfCells());
                 if (row.getCell(0) == null || "".equals(row.getCell(0).getStringCellValue())) {
                     break;
                 }
@@ -507,7 +505,8 @@ public class AdminController {
             queryWrapper.like("course_name", keywords);
         }
         Page<Subject> page = new Page<>(pageNum, limit);
-        Map<String, Object> result = new HashMap<>(5);
+        Map<String, Object> result;
+        result = new HashMap<>(5);
         result.put("code", 0);
         Page<Subject> studentPage = subjectService.page(page, queryWrapper);
         result.put("data", studentPage.getRecords());

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>选择题管理管理员端</title>
+    <title>判断题管理管理员端</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
@@ -78,7 +78,7 @@
 
         table.render({
             elem: '#currentTableId'
-            , url: '/question/choice-question/getAllChoiceQuestions'
+            , url: '/question/judgement/getAllJudgementQuestions'
             , toolbar: '#toolbarDemo'
             , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             , defaultToolbar: ['filter', 'exports', 'print', {
@@ -90,16 +90,8 @@
                 [{type: "checkbox", fixed: "left"}
                     , {field: 'id', title: 'ID', align: "center",hide: true}
                     , {field: 'title', title: '题目', align: "center"}
-                    , {field: 'optionA', title: 'A选项', align: "center"}
-                    , {field: 'optionB', title: 'B选项', align: "center"}
-                    , {field: 'optionC', title: 'C选项', align: "center"}
-                    , {field: 'optionD', title: 'D选项', align: "center"}
-                    , {field: 'optionE', title: 'E选项', align: "center"}
-                    , {field: 'optionF', title: 'F选项', align: "center"}
-                    , {field: 'answer',  title: '答案', align: "center"}
                     , {field: 'knowledgePoint', title: '知识点', hide:true, align: "center"}
                     , {field: 'level', title: '难度指数', hide:true, align: "center"}
-                    , {field: 'isMultiple', title: '是否多选', hide: true, align: "center"}
                     , {field: 'createTeacher', title: '创建老师', hide: true, align: "center"}
                     , {field: 'subjectName', title: '所属学科', hide: true, align: "center"}
                     , {title: '操作', minWidth: 180, templet: '#currentTableBar', fixed: "right", align: "center"}
@@ -118,7 +110,7 @@
             data = data.field;
             //执行搜索重载
             table.reload('currentTableId', {
-                url: '/question/choice-question/getAllChoiceQuestions'
+                url: '/question/judgement/getAllJudgementQuestions'
                 , page: {
                     curr: 1
                 }
@@ -132,13 +124,13 @@
         // 监听添加操作
         $(".data-add-btn").on("click", function () {
             let index = layer.open({
-                title: '添加选择题',
+                title: '添加判断题',
                 type: 2,
                 shade: 0.2,
                 maxmin: true,
                 shadeClose: true,
                 area: ['100%', '100%'],
-                content: '/question/choice-question/addChoiceQuestion',
+                content: '/question/judgement/addJudgementQuestionView',
             });
             $(window).on("resize", function () {
                 layer.full(index);
@@ -156,7 +148,7 @@
             layer.confirm('真的要删除所选行么？此操作不可撤回', function (index) {
                 $.ajax({
                     type: "post"
-                    , url: "/question/choice-question/deleteBatchChoiceQuestion"
+                    , url: "/question/judgement/deleteBatchJudgementQuestions"
                     , dataType: "json"
                     , contentType: "application/json"
                     , data: JSON.stringify(data)
@@ -177,15 +169,15 @@
             let data = obj.data;
             $.cookie.json = true;
             if (obj.event === 'edit') {
-                $.cookie('choiceQuestion', data,{path:'/question/choice-question'});
+                $.cookie('judgementQuestion', data,{path:'/question/judgement'});
                 let index = layer.open({
-                    title: '编辑选择题',
+                    title: '编辑判断题',
                     type: 2,
                     shade: 0.2,
                     maxmin: true,
                     shadeClose: true,
                     area: ['100%', '100%'],
-                    content: '/question/choice-question/editChoiceQuestion',
+                    content: '/question/judgement/editChoiceQuestionView',
                 });
                 $(window).on("resize", function () {
                     layer.full(index);
@@ -195,9 +187,9 @@
                 layer.confirm('真的删除行么', function (index) {
                     $.ajax({
                         type: 'post'
-                        , url: "/question/choice-question/deleteOneChoiceQuestion"
+                        , url: "/question/judgement/deleteOneJudgementQuestion"
                         , data: {
-                            "id": data.id
+                            "judgementId": data.id
                         }
                         , dataType: "json"
                         , success: function (data) {
@@ -215,14 +207,14 @@
                 //iframe层-父子操作
                 let  data = obj.data;
                 $.cookie.json = true;
-                $.cookie('test',data,{path:'/question/choice-question'});
+                $.cookie('test',data,{path:'/question/judgement'});
                 let index = layer.open({
                     type: 2,
                     title: "预览",
                     area: ['100%', '100%'],
                     fixed: false, //不固定
                     maxmin: true,
-                    content: '/question/choice-question/showOneChoiceQuestion',
+                    content: '/question/judgement/showOneJudgementQuestion',
                     btn: '确定'
                 });
                 $(window).on("resize", function () {

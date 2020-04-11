@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form" lay-filter="detail">
+
+    <div class="layui-form-item" hidden>
+        <label class="layui-form-label">ID</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="id" name="id" disabled readonly
+                       value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">题目</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="title" name="title"
+                       value="" class="layui-input" lay-verify="required" lay-reqtext="题目不能为空">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">A选项</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="optionA" name="optionA" lay-verify="required" lay-reqtext="至少两个选项"
+                       placeholder="请输入A选项" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">B选项</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="optionB" name="optionB" lay-verify="required" lay-reqtext="至少两个选项"
+                       placeholder="请输入B选项" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">C选项</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="optionC" name="optionC" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">D选项</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="optionD" name="optionD" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">E选项</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="optionE" name="optionE" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">F选项</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="optionF" name="optionF" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">答案</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="answer" name="answer" placeholder="多个答案用英文逗号隔开" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">知识点</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="knowledgePoint" name="knowledgePoint" placeholder="多个知识点用英文逗号隔开" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">解析</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="analysis" name="analysis" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">难度</label>
+        <div class="layui-input-block">
+            <label>
+                <select id="level" name="level">
+                    <option value=""></option>
+                    <option value="1">容易</option>
+                    <option value="2">较易</option>
+                    <option value="3">一般</option>
+                    <option value="4">较难</option>
+                    <option value="5">困难</option>
+                </select>
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属科目</label>
+        <div class="layui-input-block">
+            <label>
+                <select name="subjectSubordinate" id="subjectSubordinate" lay-search="">
+                    <option value="">直接选择或搜索选择</option>
+                </select>
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否多选</label>
+        <div class="layui-input-block">
+            <input type="radio" name="isMultiple" value="true" title="是" checked="">
+            <input type="radio" name="isMultiple" value="false" title="否">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery.cookie.js"></script>
+<script>
+    layui.use(['form', 'layer'], function () {
+        let form = layui.form,
+            layer = layui.layer;
+            $ = layui.$;
+        //表单赋值
+        $.ajax({
+            type: "get",
+            async: false,
+            url: "/subject/getSubjectList",
+            success: function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    $("#subjectSubordinate").append("<option value=\"" +
+                        data[i].subjectId + "\">" + data[i].courseName + "</option>");
+                }
+
+            }
+        })
+        $.cookie.json = true;
+        let cookie = $.cookie('choiceQuestion');
+        form.val('detail', {
+            "id": cookie.id// "name": "value"
+            , "title": cookie.title
+            , "level": cookie.level
+            , "optionA": cookie.optionA
+            , "optionB": cookie.optionB
+            , "optionC": cookie.optionC
+            , "optionD": cookie.optionD
+            , "optionE": cookie.optionE
+            , "optionF": cookie.optionF
+            , "knowledgePoint": cookie.knowledgePoint
+            , "isMultiple": '' + cookie.isMultiple
+            , "answer": cookie.answer
+            , "analysis": cookie.analysis
+            , "subjectSubordinate": cookie.subjectName
+        });
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            layer.confirm('您确定要保存修改吗？保存后以前的内容将会消失', {
+                btn: ['确定', '取消'] //按钮
+            }, function () {
+                //确定
+                $.ajax({
+                    type: 'post'
+                    , url: '/question/choice-question/saveOrUpdateOneChoiceQuestion?type=1'
+                    , data: JSON.stringify(data.field)
+                    , dataType: "json"
+                    , contentType: "application/json"
+                    , success: function (data) {
+                        layer.msg(data.message);
+                    }
+                });
+            }, function () {
+                //取消
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

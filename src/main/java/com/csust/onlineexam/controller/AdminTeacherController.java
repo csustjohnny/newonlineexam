@@ -2,14 +2,13 @@ package com.csust.onlineexam.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.csust.onlineexam.entity.Result;
-import com.csust.onlineexam.entity.ResultCode;
+import com.csust.onlineexam.dto.Result;
+import com.csust.onlineexam.dto.ResultCode;
 import com.csust.onlineexam.entity.Teacher;
 import com.csust.onlineexam.service.impl.TeacherServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;

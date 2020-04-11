@@ -1,4 +1,4 @@
-package com.csust.onlineexam.entity;
+package com.csust.onlineexam.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

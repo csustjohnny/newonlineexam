@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>选择题预览</title>
-    <link rel="icon" href="/images/favicon.ico">
+    <link rel="icon" href="/static/images/favicon.ico">
     <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
     <link rel="stylesheet" href="/css/public.css" media="all">
 </head>
@@ -12,7 +12,8 @@
 <div style="padding: 20px; background-color: #F2F2F2;">
     <div class="layui-col-md12">
         <div class="layui-card">
-            <div class="layui-card-header"><span id="title"></span></div>
+            <div class="layui-text"><span id="title"></span></div>
+            <hr/>
             <div class="layui-card-body">
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
@@ -32,7 +33,7 @@
 <script>
     $(function () {
         $.cookie.json = true;
-        let data = $.cookie('choiceQuestion');
+        let data = $.cookie('test');
         $('#title').html(data.title);
         $('#analysis').append(data.analysis==null?"无":data.analysis);
         if (data.isMultiple) {

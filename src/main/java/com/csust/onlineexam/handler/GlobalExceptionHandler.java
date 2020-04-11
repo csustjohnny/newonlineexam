@@ -1,7 +1,7 @@
 package com.csust.onlineexam.handler;
 
-import com.csust.onlineexam.entity.Result;
-import com.csust.onlineexam.entity.ResultCode;
+import com.csust.onlineexam.dto.Result;
+import com.csust.onlineexam.dto.ResultCode;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 
 /**

@@ -4,6 +4,8 @@ package com.csust.onlineexam.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csust.onlineexam.constant.Constant;
+import com.csust.onlineexam.dto.Result;
+import com.csust.onlineexam.dto.ResultCode;
 import com.csust.onlineexam.entity.*;
 import com.csust.onlineexam.service.impl.*;
 import io.swagger.annotations.Api;
@@ -165,6 +167,14 @@ public class AdminController {
         return modelAndView;
     }
 
+    @GetMapping("judgementQuestion_management")
+    @ApiOperation("判断题管理界面")
+    public ModelAndView judgementQuestionManagement() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/admin/question/judgementQuestion_management");
+        return modelAndView;
+    }
+
     @GetMapping("choiceQuestion_management")
     @ApiOperation("选择题管理界面")
     public ModelAndView choiceQuestionManagement() {
@@ -220,13 +230,13 @@ public class AdminController {
         String template;
         switch (type) {
             case 1:
-                template = "studentTemplate.xls";
+                template = "studentTemplate.xlsx";
                 break;
             case 2:
-                template = "teacherTemplate.xls";
+                template = "teacherTemplate.xlsx";
                 break;
             case 3:
-                template = "adminTemplate.xls";
+                template = "adminTemplate.xlsx";
                 break;
             default:
                 template = null;

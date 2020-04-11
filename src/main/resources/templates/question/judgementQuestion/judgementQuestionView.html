@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>判断题预览</title>
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+</head>
+
+<body>
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-text"><span id="title"></span></div>
+            <div class="layui-card-body">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <ul id="option"></ul>
+                    </div>
+                    <hr/>
+                    <span id="analysis">解析：</span>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery.cookie.js"></script>
+<script>
+    $(function () {
+        $.cookie.json = true;
+        let data = $.cookie('test');
+        $('#title').html(data.title);
+        $('#analysis').append(data.analysis==null?"无":data.analysis);
+        if (data.isMultiple) {
+            //多选
+            if (data.optionA != null && data.optionA !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[A]' title='A、" + data.optionA + "'></li>");
+            }
+            if (data.optionB != null && data.optionB !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[B]' title='B、" + data.optionB + "'></li>");
+            }
+            if (data.optionC != null && data.optionC !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[C]' title='C、" + data.optionC + "'></li>");
+            }
+            if (data.optionD != null && data.optionD !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[D]' title='D、" + data.optionD + "'></li>");
+            }
+            if (data.optionE != null && data.optionE !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[E]' title='E、" + data.optionE + "'></li>");
+            }
+            if (data.optionF != null && data.optionF !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[F]' title='F、" + data.optionF + "'></li>");
+            }
+        } else {
+            //单选
+            if (data.optionA != null && data.optionA !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='radio' name='sOption' value='A' title='A、" + data.optionA + "'></li>");
+            }
+            if (data.optionB != null && data.optionB !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='radio' name='sOption' value='B' title='B、" + data.optionB + "'></li>");
+            }
+            if (data.optionC != null && data.optionC !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='radio' name='sOption' value='B' title='C、" + data.optionC + "'></li>");
+            }
+            if (data.optionD != null && data.optionD !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='radio' name='sOption' value='B' title='D、" + data.optionD + "'></li>");
+            }
+            if (data.optionE != null && data.optionE !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='radio' name='sOption' value='E' title='E、" + data.optionE + "'></li>");
+            }
+            if (data.optionF != null && data.optionF !== "") {
+                $('#option').append("<li class='layui-col-md12'><input type='radio' name='sOption' value='F' title='F、" + data.optionF + "'></li>>");
+            }
+        }
+
+    });
+    layui.use('form', function () {
+        let form = layui.form;
+    });
+</script>
+</html>

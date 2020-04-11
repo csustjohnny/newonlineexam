@@ -1,7 +1,9 @@
 package com.csust.onlineexam.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,7 +17,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author johnNick
- * @since 2020-04-09
+ * @since 2020-04-10
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -26,6 +28,7 @@ public class Judgement extends Model<Judgement> {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     private String title;
@@ -39,6 +42,8 @@ public class Judgement extends Model<Judgement> {
     private String createTeacher;
 
     private Integer subjectSubordinate;
+
+    private String analysis;
 
 
     @Override

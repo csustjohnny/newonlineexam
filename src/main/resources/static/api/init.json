@@ -20,7 +20,7 @@
         {
           "title": "机构管理",
           "href": "",
-          "icon": "fa fa-home",
+          "icon": "fa fa-cog",
           "target": "_self",
           "child": [
             {
@@ -47,12 +47,12 @@
     },
     "teacher_management": {
       "title": "教师管理",
-      "icon": "fa fa-lemon-o",
+      "icon": "fa fa-graduation-cap",
       "child": [
         {
           "title": "教师管理",
           "href": "page/icon.html",
-          "icon": "fa fa-dot-circle-o",
+          "icon": "fa fa-graduation-cap",
           "target": "_self",
           "child": [
             {
@@ -64,7 +64,7 @@
             {
               "title": "教师信息批量导入",
               "href": "teacher_add",
-              "icon": "fa fa-snowflake-o",
+              "icon": "fa fa-file-excel-o",
               "target": "_self"
             }
           ]
@@ -73,7 +73,7 @@
     },
     "student_management": {
       "title": "学生管理",
-      "icon": "fa fa-slideshare",
+      "icon": "fa fa-group",
       "child": [
         {
           "title": "学生管理",
@@ -90,7 +90,7 @@
             {
               "title": "学生信息批量导入",
               "href": "student_batch_add",
-              "icon": "fa fa-calendar",
+              "icon": "fa fa-file-excel-o",
               "target": "_self"
             }
 
@@ -109,23 +109,60 @@
           "target": "",
           "child": [
             {
-              "title": "选择题管理",
-              "href": "choiceQuestion_management",
-              "icon": "fa fa-calendar",
-              "target": "_self"
+              "title": "选择题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "选择题管理",
+                  "href": "choiceQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "选择题批量添加",
+                  "href": "/question/choice-question/showQuestionBatchAddView",
+                  "icon": "fa fa-file-excel-o",
+                  "target": "_self"
+                }
+              ]
             },
             {
-              "title": "判断题管理",
-              "href": "student_batch_add",
-              "icon": "fa fa-calendar",
-              "target": "_self"
-            },
-            {
-              "title": "填空题管理",
-              "href": "student_batch_add",
-              "icon": "fa fa-calendar",
-              "target": "_self"
+              "title": "判断题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "判断题管理",
+                  "href": "judgementQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "判断题批量上传",
+                  "href": "/question/judgement/showQuestionBatchAddView",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                }
+              ]
+            }, {
+              "title": "填空题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "填空题管理",
+                  "href": "student_batch_add",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "填空题题批量上传",
+                  "href": "choiceQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                }
+              ]
             }
+
+
 
           ]
         },

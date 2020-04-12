@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>填空题预览</title>
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+    <link rel="stylesheet" href="/css/question.css" media="all">
+</head>
+
+<body>
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-text"><span id="title"></span></div>
+            <div class="layui-card-body">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-row layui-col-space10" id="blank">
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery.cookie.js"></script>
+<script>
+    $(function () {
+        $.cookie.json = true;
+        let data = $.cookie('test');
+        $('#title').html(data.question);
+        $('#analysis').append(data.analysis == null ? "无" : data.analysis);
+        for (let i = 1; i <= data.blankCount; i++) {
+            $('#blank').append('<div class="layui-col-xs6 layui-col-sm6 layui-col-md4"> <label>' + i +
+                '                                        、<input type="text" class="blank">' +
+                '                                    </label></div>')
+        }
+
+    });
+    layui.use('form', function () {
+        let form = layui.form;
+    });
+</script>
+</html>

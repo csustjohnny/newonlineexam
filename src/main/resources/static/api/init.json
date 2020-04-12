@@ -149,13 +149,13 @@
               "child": [
                 {
                   "title": "填空题管理",
-                  "href": "student_batch_add",
+                  "href": "fillingBlankQuestion_management",
                   "icon": "fa fa-calendar",
                   "target": "_self"
                 },
                 {
-                  "title": "填空题题批量上传",
-                  "href": "choiceQuestion_management",
+                  "title": "填空题批量上传",
+                  "href": "/question/filling-in-the-blank-question/showQuestionBatchAddView",
                   "icon": "fa fa-calendar",
                   "target": "_self"
                 }

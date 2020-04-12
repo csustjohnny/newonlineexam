@@ -175,6 +175,14 @@ public class AdminController {
         return modelAndView;
     }
 
+    @GetMapping("fillingBlankQuestion_management")
+    @ApiOperation("判断题管理界面")
+    public ModelAndView fillingBlankQuestionManagement() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/admin/question/fillingBlankQuestion_management");
+        return modelAndView;
+    }
+
     @GetMapping("choiceQuestion_management")
     @ApiOperation("选择题管理界面")
     public ModelAndView choiceQuestionManagement() {

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>添加填空题</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layuimini-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label required">题目</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="question" name="question" lay-verify="required" lay-reqtext="题目不能为空"
+                       value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">1空答案</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" name="blankOne" lay-verify="required" lay-reqtext="至少一个空"
+                       placeholder="请输入1空答案" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">2空答案</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="blankTwo" name="blankTwo" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">3空答案</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="blankThree" name="blankThree" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">4空答案</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="blankFour" name="blankFour" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">5空答案</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="blankFive" name="blankFive" value="" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label required">填空数</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="number" id="blankCount" name="blankCount" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">知识点</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" id="knowledgePoint" name="knowledgePoint" placeholder="多个知识点用英文逗号隔开" value=""
+                       class="layui-input">
+            </label>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">难度</label>
+        <div class="layui-input-block">
+            <label>
+                <select id="level" name="level">
+                    <option value=""></option>
+                    <option value="1">容易</option>
+                    <option value="2">较易</option>
+                    <option value="3">一般</option>
+                    <option value="4">较难</option>
+                    <option value="5">困难</option>
+                </select>
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属科目</label>
+        <div class="layui-input-block">
+            <label>
+                <select name="subjectId" id="subjectId" lay-search="">
+                    <option value="">直接选择或搜索选择</option>
+                </select>
+            </label>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="saveBtn">确认添加</button>
+        </div>
+    </div>
+</div>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script>
+    $(function () {
+        $.ajax({
+            type: "get",
+            async: false,
+            url: "/subject/getSubjectList",
+            success: function (data) {
+                for (let i = 0; i < data.length; i++) {
+                    $("#subjectId").append("<option value=\"" +
+                        data[i].subjectId + "\">" + data[i].courseName + "</option>");
+                }
+            }
+        })
+    });
+    layui.use(['form', 'layer'], function () {
+        let form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax({
+                url: "/question/filling-in-the-blank-question/saveOrUpdateOneQuestion?type=0",
+                type: "post",
+                data: JSON.stringify(data.field),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    layer.alert(data.message);
+                }
+            });
+
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

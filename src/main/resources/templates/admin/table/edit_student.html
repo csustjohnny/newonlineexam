@@ -119,6 +119,7 @@
             }
         });
         let data = $.cookie('test');
+        console.log(data);
         $('#studentNo').val(data.studentNo);
         $('#name').val(data.name);
         $("input[name='sex'][value="+data.sex+"]").attr("checked",true);

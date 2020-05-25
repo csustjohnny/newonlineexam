@@ -12,6 +12,7 @@ import com.csust.onlineexam.dto.ResultCode;
 import com.csust.onlineexam.entity.Subject;
 import com.csust.onlineexam.service.impl.ChoiceQuestionServiceImpl;
 import com.csust.onlineexam.service.impl.SubjectServiceImpl;
+import com.csust.onlineexam.util.DgbSecurityUserHelper;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -54,7 +55,6 @@ import static com.csust.onlineexam.util.FileRelate.getTemplate;
 public class ChoiceQuestionController {
     private final ChoiceQuestionServiceImpl choiceQuestionService;
     private final SubjectServiceImpl subjectService;
-
     @Autowired
     public ChoiceQuestionController(ChoiceQuestionServiceImpl choiceQuestionService, SubjectServiceImpl subjectService) {
         this.choiceQuestionService = choiceQuestionService;
@@ -107,13 +107,18 @@ public class ChoiceQuestionController {
             @ApiImplicitParam(name = "current", value = "当前页", defaultValue = "1"),
             @ApiImplicitParam(name = "limit", value = "每页数量", defaultValue = "10"),
             @ApiImplicitParam(name = "title", value = "题目"),
+            @ApiImplicitParam(name = "onlyShowMyQuestion", value = "是否只查看自己的题目"),
             @ApiImplicitParam(name = "knowledgePoint", value = "知识点"),
     })
     public PaginationDTO getAllChoiceQuestions(@RequestParam(name = "current", defaultValue = "1") int current,
                                                @RequestParam(name = "limit", defaultValue = "15") int limit,
                                                @RequestParam(name = "title", required = false) String title,
+                                               @RequestParam(name = "onlyShowMyQuestion", required = false) boolean onlyShowMyQuestion,
                                                @RequestParam(name = "knowledgePoint", required = false) String knowledgePoint) {
         QueryWrapper<ChoiceQuestion> queryWrapper = new QueryWrapper<>();
+        if(DgbSecurityUserHelper.isCurrentUserRoleTeacher() && onlyShowMyQuestion){
+            queryWrapper.eq("create_teacher",DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1]);
+        }
         if (title != null && !"".equals(title)) {
             queryWrapper.like("title", title);
         }
@@ -137,6 +142,10 @@ public class ChoiceQuestionController {
     @ApiOperation("批量添加选择题")
     @Transactional(rollbackFor = Exception.class)
     public Result addBatchChoiceQuestions(HttpServletRequest request) throws IOException {
+        String teacherNo = null;
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            teacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+        }
         MultipartFile multiFile = ((MultipartHttpServletRequest) request).getFile("file");
         assert multiFile != null;
         String fileName = multiFile.getOriginalFilename();
@@ -173,6 +182,7 @@ public class ChoiceQuestionController {
             }
             choiceQuestion.setSubjectSubordinate(subjectList.get(formatter.formatCellValue(row.getCell(11)).trim()));
             choiceQuestion.setIsMultiple("是".equals(formatter.formatCellValue(row.getCell(9)).trim()));
+            choiceQuestion.setCreateTeacher(teacherNo);
             choiceQuestionService.save(choiceQuestion);
         }
         fis.close();
@@ -187,6 +197,15 @@ public class ChoiceQuestionController {
         if (questionList.size() == 0) {
             return Result.failure(ResultCode.PARAMS_INCORRECT);
         }
+        //教师角色判断是否拥有权限
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            String currentTeacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+            for(ChoiceQuestion question : questionList){
+                if(!currentTeacherNo.equals(question.getCreateTeacher())){
+                    return Result.failure(ResultCode.AUTHORITY_ERROR);
+                }
+            }
+        }
         List<Integer> idList = new ArrayList<>();
         questionList.forEach(choiceQuestion -> idList.add(choiceQuestion.getId()));
         choiceQuestionService.removeByIds(idList);
@@ -197,7 +216,12 @@ public class ChoiceQuestionController {
     @ApiOperation("删除一个选择题")
     @ApiImplicitParam(name = "id", value = "问题ID", required = true)
     public Result deleteOneQuestion(@RequestParam int id) {
-        return choiceQuestionService.removeById(id) ? Result.success() : Result.failure(ResultCode.DELETE_FAILURE);
+        QueryWrapper<ChoiceQuestion> questionQueryWrapper = new QueryWrapper<>();
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            questionQueryWrapper.eq("create_teacher",DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1]);
+        }
+        questionQueryWrapper.eq("id",id);
+        return choiceQuestionService.remove(questionQueryWrapper) ? Result.success() : Result.failure(ResultCode.AUTHORITY_ERROR);
     }
 
     @PostMapping("saveOrUpdateOneChoiceQuestion")
@@ -208,9 +232,26 @@ public class ChoiceQuestionController {
     })
     public Result updateOneChoiceQuestion(@RequestBody ChoiceQuestion choiceQuestion,
                                           @RequestParam int type) {
+        boolean result;
+        //更新却没有问题id
         if (type == 1 && choiceQuestion.getId() == null) {
             return Result.failure(ResultCode.PARAMS_INCORRECT);
         }
-        return choiceQuestionService.saveOrUpdate(choiceQuestion) ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
+        //教师添加或更新问题
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            String currentTeacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+            String createTeacherNo = choiceQuestionService.getById(choiceQuestion.getId()).getCreateTeacher();
+            //是更新自己的问题
+            choiceQuestion.setCreateTeacher(currentTeacherNo);
+            if(type==1 && currentTeacherNo.equals(createTeacherNo)) {
+                result = choiceQuestionService.updateById(choiceQuestion);
+            } else {
+                result = choiceQuestionService.save(choiceQuestion);
+            }
+        } else{
+            //管理员更新或添加
+            result = choiceQuestionService.saveOrUpdate(choiceQuestion);
+        }
+        return result ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
     }
 }

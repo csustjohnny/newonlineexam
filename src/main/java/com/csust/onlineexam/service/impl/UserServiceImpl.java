@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserDetailsService {
     private final StudentMapper studentMapper;
 
     public static Integer USER_TYPE = 0;
+
     @Autowired
     public UserServiceImpl(AdminMapper adminMapper, TeacherMapper teacherMapper, StudentMapper studentMapper) {
         this.adminMapper = adminMapper;
@@ -36,35 +37,28 @@ public class UserServiceImpl implements UserDetailsService {
         this.studentMapper = studentMapper;
     }
 
-
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        if(USER_TYPE == 0){
+        if (USER_TYPE == 0) {
             //学生登录
-            /*QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("student_no",s);*/
             Student student = studentMapper.selectById(s);
-            if(student == null){
+            if (student == null) {
                 throw new UsernameNotFoundException("用户账号不存在");
             }
-            return new User(student.getStudentNo(),student.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_STUDENT"));
-        } else if (USER_TYPE == 1){
+            return new User(student.getName() + " " + student.getStudentNo(), student.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_STUDENT"));
+        } else if (USER_TYPE == 1) {
             //教师登录
-            /*QueryWrapper<Teacher> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("teacher_no",s);*/
-            System.out.println(s);
             Teacher teacher = teacherMapper.selectById(s);
-            if(teacher == null){
+            if (teacher == null) {
                 throw new UsernameNotFoundException("用户账号不存在");
             }
-            System.out.println(teacher);
-            return new User(teacher.getTeacherNo(),teacher.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_TEACHER"));
+            return new User(teacher.getTeacherName() + " " + teacher.getTeacherNo(), teacher.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_TEACHER"));
         } else {
             //管理员登录
             QueryWrapper<Admin> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("admin_name",s);
+            queryWrapper.eq("admin_name", s);
             Admin admin = adminMapper.selectOne(queryWrapper);
-            if(admin == null){
+            if (admin == null) {
                 throw new UsernameNotFoundException("用户账号不存在");
             }
             return new User(s, admin.getAdminPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));

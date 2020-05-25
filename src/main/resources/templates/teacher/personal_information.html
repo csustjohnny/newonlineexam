@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置我的资料</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+</head>
+<body>
+<ins class="adsbygoogle" style="display:inline-block;width:970px;height:90px" data-ad-client="ca-pub-6111334333458862"
+     data-ad-slot="3820120620"></ins>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>个人信息管理</legend>
+</fieldset>
+<form class="layui-form" action="" lay-filter="example">
+    <div class="layui-form-item">
+        <label class="layui-form-label">电话号码</label>
+        <div class="layui-input-block">
+            <input id="phone" type="number" name="phone" lay-verify="true" autocomplete="off" placeholder="请输入电话号码"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">邮箱</label>
+        <div class="layui-input-block">
+            <input id="email" type="email" name="email" autocomplete="off" placeholder="请输入邮箱"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">QQ</label>
+        <div class="layui-input-block">
+            <input id="qq" type="number" name="qq" autocomplete="off" placeholder="请输入QQ"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">微信</label>
+        <div class="layui-input-block">
+            <input id="wechat" type="text" name="wechat" lay-verify="true" autocomplete="off" placeholder="请输入qq"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">修改密码</label>
+        <div class="layui-input-block">
+            <input id="password" type="password" name="password" placeholder="请输入更改后的密码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn layui-btn-normal" id="LAY-component-form-setval">赋值</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="LAY-component-form-getval">取值</button>
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+        </div>
+    </div>
+</form>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+    $(function(){
+        $.ajax({
+            url: "getPersonInfo",
+            type: "get",
+            success: function(result){
+                let data = result.data;
+                $('#qq').val(data.qq);
+                $("#email").val(data.email);
+                $("#wechat").val(data.wechat);
+                $("#phone").val(data.phone);
+                console.log(data);
+            }
+        })
+    })
+</script>
+</body>
+</html>

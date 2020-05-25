@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+</head>
+
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>添加问题</legend>
+        </fieldset>
+
+        <form class="layui-form" action="">
+            <!--题目-->
+            <div class="layui-form-item">
+                <label class="layui-form-label required">题目</label>
+                <div class="layui-input-block">
+                    <input type="title" name="title" lay-verify="required" autocomplete="off" placeholder="请输入标题"
+                           class="layui-input">
+                </div>
+            </div>
+            <!--描述-->
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label required">描述: </label>
+                <div id="description" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">输入描述: </label><br/>
+                <div id="input" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">输出描述: </label><br/>
+                <div id="output" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">样例输入: </label><br/>
+                <div id="sampleInput" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">样例输出: </label><br/>
+                <div id="sampleOutput" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">输入测试: </label><br/>
+                <div id="testInput" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">输出测试: </label><br/>
+                <div id="testOutput" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px;">时间限制(ms)</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="timeLimit" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px;">空间限制(MB)</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="memoryLimit" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">知识点</label>
+                <div class="layui-input-block">
+                    <input type="knowledgePoint" name="knowledgePoint" autocomplete="off" placeholder="多个知识点用分号隔开"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">难度</label>
+                <div class="layui-input-block">
+                    <label>
+                        <select id="level" name="level">
+                            <option value=""></option>
+                            <option value="1">容易</option>
+                            <option value="2">较易</option>
+                            <option value="3">一般</option>
+                            <option value="4">较难</option>
+                            <option value="5">困难</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">提示: </label><br/>
+                <div id="hint" class="layui-input-block" style="min-width: 700px;">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit="" lay-filter="demo2">确认保存</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+		<script src="/js/layConfig.js?v=1.0.4" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use(['form', 'wangEditor'], function () {
+        let form = layui.form,
+            layer = layui.layer,
+            wangEditor = layui.wangEditor;
+
+        let description = new wangEditor('#description');
+        description.create();
+        let input = new wangEditor("#input");
+        input.create();
+        let output = new wangEditor("#output");
+        output.create();
+        let sampleInput = new wangEditor("#sampleInput");
+        sampleInput.create();
+        let sampleOutput = new wangEditor("#sampleOutput");
+        sampleOutput.create();
+        let testInput = new wangEditor("#testInput");
+        testInput.create();
+        let testOutput = new wangEditor("#testOutput");
+        testOutput.create();
+        let hint = new wangEditor("#hint");
+        hint.create();
+        //监听提交
+        form.on('submit(demo2)', function (data) {
+            let result = data.field;
+            result.description = description.txt.html();
+            result.input = input.txt.html();
+            result.output = output.txt.html();
+            result.sampleInput = sampleInput.txt.html();
+            result.sampleOutput = sampleOutput.txt.html();
+            result.testInput = testInput.txt.html();
+            result.testOutput = testOutput.txt.html();
+            result.hint = hint.txt.html();
+            $.ajax({
+                url: "/question/code-question/saveOrUpdateQuestion?type=0",
+                type: "post",
+                data: JSON.stringify(result),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    layer.alert(data.message);
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+
+</body>
+
+</html>

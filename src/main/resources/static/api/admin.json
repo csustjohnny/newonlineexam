@@ -1,0 +1,219 @@
+{
+  "clearInfo": {
+    "clearUrl": "api/clear.json"
+  },
+  "homeInfo": {
+    "title": "首页",
+    "icon": "fa fa-home",
+    "href": ""
+  },
+  "logoInfo": {
+    "title": "后台管理",
+    "image": "/images/logo.png",
+    "href": ""
+  },
+  "menuInfo": {
+    "institution": {
+      "title": "机构科目管理",
+      "icon": "fa fa-address-book",
+      "child": [
+        {
+          "title": "机构科目管理",
+          "href": "",
+          "icon": "fa fa-cog",
+          "target": "_self",
+          "child": [
+            {
+              "title": "机构管理",
+              "href": "/admin/institution_management",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            },
+            {
+              "title": "科目管理",
+              "href": "/admin/subject_management",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "课程管理",
+          "href": "",
+          "icon": "fa fa-cog",
+          "target": "_self",
+          "child": [
+            {
+              "title": "课程管理",
+              "href": "/admin/course/course_management",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            },
+            {
+              "title": "课程批量导入",
+              "href": "/admin/course/course_batch_add",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    },
+    "teacher_management": {
+      "title": "教师管理",
+      "icon": "fa fa-graduation-cap",
+      "child": [
+        {
+          "title": "教师管理",
+          "href": "page/icon.html",
+          "icon": "fa fa-graduation-cap",
+          "target": "_self",
+          "child": [
+            {
+              "title": "教师列表",
+              "href": "/admin/teacher_management",
+              "icon": "fa fa-snowflake-o",
+              "target": "_self"
+            },
+            {
+              "title": "教师信息批量导入",
+              "href": "/admin/teacher_add",
+              "icon": "fa fa-file-excel-o",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    },
+    "student_management": {
+      "title": "学生管理",
+      "icon": "fa fa-group",
+      "child": [
+        {
+          "title": "学生管理",
+          "href": "",
+          "icon": "fa fa-meetup",
+          "target": "",
+          "child": [
+            {
+              "title": "学生信息",
+              "href": "/admin/student_management",
+              "icon": "fa fa-calendar",
+              "target": "_self"
+            },
+            {
+              "title": "学生信息批量导入",
+              "href": "/admin/student_batch_add",
+              "icon": "fa fa-file-excel-o",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    },
+    "question_management": {
+      "title": "考试管理中心",
+      "icon": "fa fa-slideshare",
+      "child": [
+        {
+          "title": "常规题管理",
+          "href": "",
+          "icon": "fa fa-meetup",
+          "target": "",
+          "child": [
+            {
+              "title": "选择题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "选择题管理",
+                  "href": "/admin/choiceQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "选择题批量添加",
+                  "href": "/question/choice-question/showQuestionBatchAddView",
+                  "icon": "fa fa-file-excel-o",
+                  "target": "_self"
+                }
+              ]
+            },
+            {
+              "title": "判断题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "判断题管理",
+                  "href": "/admin/judgementQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "判断题批量上传",
+                  "href": "/question/judgement/showQuestionBatchAddView",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                }
+              ]
+            },
+            {
+              "title": "填空题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "填空题管理",
+                  "href": "/admin/fillingBlankQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "填空题批量上传",
+                  "href": "/question/filling-in-the-blank-question/showQuestionBatchAddView",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                }
+              ]
+            },
+            {
+              "title": "编程题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "问题列表",
+                  "href": "/admin/codeQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "增加题目",
+                  "href": "/question/code-question/showAddCodeQuestion",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "批量导入题目",
+                  "href": "/question/code-question/showQuestionBatchAddView",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "考试管理",
+          "icon": "fa fa-superpowers",
+          "child": [
+            {
+              "title": "编程题管理",
+              "href": "page/error.html",
+              "icon": "fa fa-superpowers",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 package com.csust.onlineexam.filter;
 
+import com.csust.onlineexam.constant.Constant;
 import com.csust.onlineexam.handler.LoginFailureHandler;
 import com.csust.onlineexam.service.impl.UserServiceImpl;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -31,7 +32,7 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         //判断是否为登录请求
-        if (httpServletRequest.getRequestURI().contains("/login") && httpServletRequest.getMethod().toUpperCase().equals("POST")) {
+        if (httpServletRequest.getRequestURI().contains(Constant.LOGIN_URL) && Constant.POST_STRING.equalsIgnoreCase(httpServletRequest.getMethod())) {
             String code = httpServletRequest.getParameter("validateCode");
             String sessionCode = httpServletRequest.getSession().getAttribute("checkCode").toString();
 

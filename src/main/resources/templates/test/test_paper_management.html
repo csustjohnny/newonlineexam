@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>试卷配置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+</head>
+<style>
+    .exam-title {
+        text-align: center;
+        font-size: 25px;
+        padding: 20px;
+    }
+
+    .layui-card-header h1 {
+        width: 130px;
+        height: 45px;
+        background: #389fc3;
+        text-align: center;
+        font-size: 14px;
+        display: block;
+        float: left;
+        color: #fff;
+        line-height: 45px;
+        margin-bottom: 0px;
+    }
+
+    .answer-card-content {
+        width: 278px;
+        height: 100%;
+        border: 1px solid #e4e4e4;
+        border-top-color: rgb(228, 228, 228);
+
+    }
+
+    .answer-card-content ul {
+        padding: 10px;
+        text-align: left;
+    }
+
+    .answer-card-content-tittle {
+        width: 95%;
+        height: 40px;
+        margin: 0 auto;
+        border-bottom: 1px solid #e4e4e4;
+    }
+
+    .answer-card-content ul li {
+        display: inline-block;
+        margin-bottom: 5px;
+        height: 30px;
+        width: 30px;
+        line-height: 30px;
+        text-align: center;
+        border: 1px solid #e4e4e4;
+    }
+
+    .answer-card-content ul li a {
+        display: block;
+        text-decoration: none;
+        color: #666;
+    }
+    .question_title {
+        font-size: 20px;
+        padding: 10px;
+    }
+    .answer-card-yes {
+        background-color: #99cee1;
+    }
+</style>
+<body>
+<div style="padding: 20px; background-color: #F2F2F2;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md9">
+            <div class="layui-card">
+                <div class="layui-card-header exam-title" id="exam_title"></div>
+                <div class="layui-card-body">
+                    <div class="layui-card">
+                        <div class="layui-card-header question_title">选择题</div>
+                        <div class="layui-card-body">
+                            <ul>
+                                <li >
+                                    <div class="layui-card">
+                                        <div style="font-size: 15px"><span id="question_order">1、</span><span id="title">下列叙述正确的是</span></div>
+                                        <hr>
+                                        <div class="layui-card-body">
+                                            <form class="layui-form layui-form-pane" action="">
+                                                <div class="layui-form-item">
+                                                    <ul id="option"><li class="layui-col-md12"><input type="radio" name="sOption" value="A" title="A、数据库是一个独立的系统,不需要操作系统的支持"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>A、数据库是一个独立的系统,不需要操作系统的支持</div></div></li><li class="layui-col-md12"><input type="radio" name="sOption" value="B" title="B、数据库设计是指设计数据库管理"><div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon layui-anim-scaleSpring"></i><div>B、数据库设计是指设计数据库管理</div></div></li><li class="layui-col-md12"><input type="radio" name="sOption" value="B" title="C、数据库技术的根本目标是要解决数据共享的问题"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>C、数据库技术的根本目标是要解决数据共享的问题</div></div></li><li class="layui-col-md12"><input type="radio" name="sOption" value="B" title="D、数据库系统中,数据的物理结构必须与逻辑结构一致"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><div>D、数据库系统中,数据的物理结构必须与逻辑结构一致</div></div></li></ul>
+                                                </div>
+                                                <hr>
+                                                <span id="analysis">解析：无</span>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <h1>答题卡</h1>
+                </div>
+                <div class="layui-card-body">
+                    <div class="answer-card-content">
+                        <div class="answer-card-content-tittle">
+                            <div style="width: 150px;float: left;text-align: center;font-weight: bold;padding-top: 10px;">
+                                选择题
+                            </div>
+                            <div style="width: 100px;float: right;text-align: center;padding-top: 10px;">共<span
+                                    id="choiceQuestionCount">1</span>题
+                            </div>
+                        </div>
+                        <ul>
+                            <li><a id="an_card_29" href="home/paper/toCfg?id=2#title_29" class="answer-card-yes">1</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="answer-card-content">
+                        <div class="answer-card-content-tittle">
+                            <div style="width: 150px;float: left;text-align: center;font-weight: bold;padding-top: 10px;">
+                                判断题
+                            </div>
+                            <div style="width: 100px;float: right;text-align: center;padding-top: 10px;">共<span
+                                    id="judgingQuestionCount">1</span>题
+                            </div>
+                        </div>
+                        <ul>
+                            <li><a id="an_card_29" href="home/paper/toCfg?id=2#title_29" class="answer-card-yes">1</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="answer-card-content">
+                        <div class="answer-card-content-tittle">
+                            <div style="width: 150px;float: left;text-align: center;font-weight: bold;padding-top: 10px;">
+                                填空题
+                            </div>
+                            <div style="width: 100px;float: right;text-align: center;padding-top: 10px;">共<span
+                                    id="fillinBlankQuestionCount">1</span>题
+                            </div>
+                        </div>
+                        <ul>
+                            <li><a id="an_card_29" href="home/paper/toCfg?id=2#title_29" class="answer-card-yes">1</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="answer-card-content">
+                        <div class="answer-card-content-tittle">
+                            <div style="width: 150px;float: left;text-align: center;font-weight: bold;padding-top: 10px;">
+                                编程题
+                            </div>
+                            <div style="width: 100px;float: right;text-align: center;padding-top: 10px;">共<span
+                                    id="codeQuestionCount">1</span>题
+                            </div>
+                        </div>
+                        <ul>
+                            <li><a id="an_card_29" href="home/paper/toCfg?id=2#title_29" class="answer-card-yes">1</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+    function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
+    }
+
+    layui.use(['layer', 'form'], function () {
+        let layer = layui.layer,
+            form = layui.form;
+        $.ajax({
+            type: "get",
+            async: false,
+            url: "/exam/getOneExam",
+            data: {
+                examId: getURLParameter("exam_id")
+            },
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.alert(data.message);
+                } else {
+                    $('#exam_title').html(data.data.examTitle);
+                }
+            }
+        });
+
+    })
+    $(function () {
+
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csust.onlineexam.mapper.Exam2studentMapper">
+
+    <select id="getStudentsExam" resultType="com.csust.onlineexam.entity.Exam">
+        SELECT t_exam.* FROM
+            t_exam left outer JOIN t_exam2student
+                        on t_exam.exam_id = t_exam2student.exam_id
+                   left outer JOIN t_student
+                       on t_student.student_no = t_exam2student.student_no ${ew.customSqlSegment}
+    </select>
+</mapper>

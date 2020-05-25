@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.csust.onlineexam.mapper.CourseMapper">
+    <select id="getCourseInfoList" resultType="java.util.Map">
+        SELECT t_class_info.class_id, class_name,t_subject.subject_id,course_name, teacher_name
+        from t_course LEFT JOIN t_class_info on t_course.class_no = t_class_info.class_id
+                      LEFT JOIN t_subject on t_course.subject_id = t_subject.subject_id
+                      LEFT JOIN t_teacher on t_course.course_teacher = t_teacher.teacher_no
+    </select>
+</mapper>

@@ -10,6 +10,7 @@ import com.csust.onlineexam.entity.FillingInTheBlankQuestion;
 import com.csust.onlineexam.entity.Subject;
 import com.csust.onlineexam.service.impl.FillingInTheBlankQuestionServiceImpl;
 import com.csust.onlineexam.service.impl.SubjectServiceImpl;
+import com.csust.onlineexam.util.DgbSecurityUserHelper;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -99,13 +100,18 @@ public class FillingInTheBlankQuestionController {
             @ApiImplicitParam(name = "current", value = "当前页", defaultValue = "1"),
             @ApiImplicitParam(name = "limit", value = "每页数量", defaultValue = "10"),
             @ApiImplicitParam(name = "title", value = "题目"),
+            @ApiImplicitParam(name = "onlyShowMyQuestion", value = "是否只查看自己的题目"),
             @ApiImplicitParam(name = "knowledgePoint", value = "知识点"),
     })
     public PaginationDTO getAllFillingBlankQuestions(@RequestParam(name = "current", defaultValue = "1") int current,
-                                               @RequestParam(name = "limit", defaultValue = "15") int limit,
-                                               @RequestParam(name = "title", required = false) String title,
-                                               @RequestParam(name = "knowledgePoint", required = false) String knowledgePoint) {
+                                                     @RequestParam(name = "limit", defaultValue = "15") int limit,
+                                                     @RequestParam(name = "title", required = false) String title,
+                                                     @RequestParam(name = "onlyShowMyQuestion", required = false) boolean onlyShowMyQuestion,
+                                                     @RequestParam(name = "knowledgePoint", required = false) String knowledgePoint) {
         QueryWrapper<FillingInTheBlankQuestion> queryWrapper = new QueryWrapper<>();
+        if(DgbSecurityUserHelper.isCurrentUserRoleTeacher() && onlyShowMyQuestion){
+            queryWrapper.eq("create_teacher",DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1]);
+        }
         if (title != null && !"".equals(title)) {
             queryWrapper.like("question", title);
         }
@@ -139,6 +145,10 @@ public class FillingInTheBlankQuestionController {
         } else {
             workbook = new HSSFWorkbook(fis);
         }
+        String teacherNo = null;
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            teacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+        }
         Sheet sheet = workbook.getSheetAt(0);
         DataFormatter formatter = new DataFormatter();
         Map<String, Integer> subjectList = new HashMap<>(20);
@@ -161,6 +171,7 @@ public class FillingInTheBlankQuestionController {
             }
             question.setSubjectSubordinate(subjectList.get(formatter.formatCellValue(row.getCell(8)).trim()));
             question.setBlankCount((int) row.getCell(9).getNumericCellValue());
+            question.setCreateTeacher(teacherNo);
             fillingInTheBlankQuestionService.save(question);
         }
         fis.close();
@@ -174,6 +185,15 @@ public class FillingInTheBlankQuestionController {
         if (questionList.size() == 0) {
             return Result.failure(ResultCode.PARAMS_INCORRECT);
         }
+        //教师角色判断是否拥有权限
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            String currentTeacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+            for(FillingInTheBlankQuestion question : questionList){
+                if(!currentTeacherNo.equals(question.getCreateTeacher())){
+                    return Result.failure(ResultCode.AUTHORITY_ERROR);
+                }
+            }
+        }
         List<Integer> idList = new ArrayList<>();
         questionList.forEach(fillingInTheBlankQuestion -> idList.add(fillingInTheBlankQuestion.getQuestionId()));
         fillingInTheBlankQuestionService.removeByIds(idList);
@@ -183,7 +203,12 @@ public class FillingInTheBlankQuestionController {
     @ApiOperation("删除一个填空题")
     @ApiImplicitParam(name = "id", value = "问题ID", required = true)
     public Result deleteOneQuestion(@RequestParam int id) {
-        return fillingInTheBlankQuestionService.removeById(id) ? Result.success() : Result.failure(ResultCode.DELETE_FAILURE);
+        QueryWrapper<FillingInTheBlankQuestion> questionQueryWrapper = new QueryWrapper<>();
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            questionQueryWrapper.eq("create_teacher",DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1]);
+        }
+        questionQueryWrapper.eq("id",id);
+        return fillingInTheBlankQuestionService.remove(questionQueryWrapper) ? Result.success() : Result.failure(ResultCode.DELETE_FAILURE);
     }
     @PostMapping("saveOrUpdateOneQuestion")
     @ApiOperation("更新或添加一道填空题")
@@ -196,6 +221,22 @@ public class FillingInTheBlankQuestionController {
         if (type == 1 && fillingInTheBlankQuestion.getQuestionId() == null) {
             return Result.failure(ResultCode.PARAMS_INCORRECT);
         }
-        return fillingInTheBlankQuestionService.saveOrUpdate(fillingInTheBlankQuestion) ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
+        boolean result;
+        //教师添加或更新问题
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            String currentTeacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+            String createTeacherNo = fillingInTheBlankQuestionService.getById(fillingInTheBlankQuestion.getQuestionId()).getCreateTeacher();
+            //是更新自己的问题
+            fillingInTheBlankQuestion.setCreateTeacher(currentTeacherNo);
+            if(type==1 && currentTeacherNo.equals(createTeacherNo)) {
+                result = fillingInTheBlankQuestionService.updateById(fillingInTheBlankQuestion);
+            } else {
+                result = fillingInTheBlankQuestionService.save(fillingInTheBlankQuestion);
+            }
+        } else{
+            //管理员更新或添加
+            result = fillingInTheBlankQuestionService.saveOrUpdate(fillingInTheBlankQuestion);
+        }
+        return result ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
     }
 }

@@ -28,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,12 +56,13 @@ public class AdminController {
     private final DepartmentServiceImpl departmentService;
     private final ClassInfoServiceImpl classInfoService;
     private final SubjectServiceImpl subjectService;
+    private final CourseServiceImpl courseService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
     public AdminController(StudentServiceImpl studentService, InstitutionServiceImpl institutionService, TeacherServiceImpl teacherService,
                            SchoolServiceImpl schoolService, DepartmentServiceImpl departmentService, ClassInfoServiceImpl classInfoService,
-                           SubjectServiceImpl subjectService) {
+                           SubjectServiceImpl subjectService, CourseServiceImpl courseService) {
         this.studentService = studentService;
         this.institutionService = institutionService;
         this.teacherService = teacherService;
@@ -68,6 +70,7 @@ public class AdminController {
         this.departmentService = departmentService;
         this.classInfoService = classInfoService;
         this.subjectService = subjectService;
+        this.courseService = courseService;
     }
 
     @GetMapping("/index")
@@ -91,6 +94,14 @@ public class AdminController {
     public ModelAndView studentBatchAdd() {
         ModelAndView studentWelcome = new ModelAndView();
         studentWelcome.setViewName("admin/student/student_add");
+        return studentWelcome;
+    }
+
+    @GetMapping("add_course")
+    @ApiOperation("学生批量导入界面")
+    public ModelAndView showAddCourse() {
+        ModelAndView studentWelcome = new ModelAndView();
+        studentWelcome.setViewName("/form/add_course_form");
         return studentWelcome;
     }
 
@@ -142,6 +153,14 @@ public class AdminController {
         return subjectManagement;
     }
 
+    @GetMapping("/course_management")
+    @ApiOperation("学科管理界面")
+    public ModelAndView courseManagement() {
+        ModelAndView courseManagement = new ModelAndView();
+        courseManagement.setViewName("admin/course_management");
+        return courseManagement;
+    }
+
     @GetMapping("teacher_management")
     @ApiOperation("教师管理界面")
     public ModelAndView teacherManagement() {
@@ -188,6 +207,14 @@ public class AdminController {
     public ModelAndView choiceQuestionManagement() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/admin/question/choiceQuestion_management");
+        return modelAndView;
+    }
+
+    @GetMapping("codeQuestion_management")
+    @ApiOperation("编程题管理界面")
+    public ModelAndView codeQuestionManagement() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/admin/question/codeQuestion_management");
         return modelAndView;
     }
 
@@ -246,6 +273,9 @@ public class AdminController {
             case 3:
                 template = "adminTemplate.xlsx";
                 break;
+            case 4:
+                template = "courseTemplate.xlsx";
+                break;
             default:
                 template = null;
                 break;
@@ -265,8 +295,8 @@ public class AdminController {
     @PostMapping("/uploadTemplate/{type}")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @ApiOperation("上传文件接口")
-    public Result uploadTemplate(HttpServletRequest request, @PathVariable int type) throws IOException {
+    @ApiOperation("上传学生和教师接口")
+    public Result uploadTemplate(HttpServletRequest request, @PathVariable int type) throws IOException, SQLIntegrityConstraintViolationException {
 
         // 获取上传的文件
         MultipartFile multiFile = ((MultipartHttpServletRequest) request).getFile("file");
@@ -334,6 +364,25 @@ public class AdminController {
                     teacher.setPassword(new BCryptPasswordEncoder().encode(formatter.formatCellValue(row.getCell(7)).trim()));
                 }
                 teacherService.saveOrUpdate(teacher);
+            }
+        } else if (type == 3) {
+            //课程模板
+            Map<String, Integer> classList = new HashMap<>(6);
+            classInfoService.list().forEach(classInfo -> classList.put(classInfo.getClassName(), classInfo.getClassId()));
+            Map<String, Integer> subjectList = new HashMap<>(10);
+            subjectService.list().forEach(subject -> subjectList.put(subject.getCourseName(), subject.getSubjectId()));
+
+            Course course;
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                Row row = sheet.getRow(i);
+                if ("".equals(formatter.formatCellValue(row.getCell(0)).trim())) {
+                    break;
+                }
+                course = new Course();
+                course.setClassNo(classList.get(formatter.formatCellValue(row.getCell(0)).trim()));
+                course.setSubjectId(subjectList.get(formatter.formatCellValue(row.getCell(1)).trim()));
+                course.setCourseTeacher(formatter.formatCellValue(row.getCell(2)).trim());
+                courseService.save(course);
             }
         }
         fis.close();

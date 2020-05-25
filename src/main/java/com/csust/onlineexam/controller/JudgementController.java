@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csust.onlineexam.constant.Constant;
 import com.csust.onlineexam.dto.PaginationDTO;
 import com.csust.onlineexam.dto.ResultCode;
+import com.csust.onlineexam.entity.ChoiceQuestion;
 import com.csust.onlineexam.entity.Judgement;
 import com.csust.onlineexam.dto.Result;
 import com.csust.onlineexam.service.impl.JudgementServiceImpl;
 import com.csust.onlineexam.service.impl.SubjectServiceImpl;
+import com.csust.onlineexam.util.DgbSecurityUserHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -102,13 +104,18 @@ public class JudgementController {
             @ApiImplicitParam(name = "current", value = "当前页", defaultValue = "1"),
             @ApiImplicitParam(name = "limit", value = "每页数量", defaultValue = "10"),
             @ApiImplicitParam(name = "title", value = "题目"),
+            @ApiImplicitParam(name = "onlyShowMyQuestion", value = "是否只查看自己的问题"),
             @ApiImplicitParam(name = "knowledgePoint", value = "知识点"),
     })
     public PaginationDTO getAllJudgementQuestions(@RequestParam(name = "current", defaultValue = "1") int current,
                                                   @RequestParam(name = "limit", defaultValue = "15") int limit,
                                                   @RequestParam(name = "title", required = false) String title,
+                                                  @RequestParam(name = "onlyShowMyQuestion", required = false) boolean onlyShowMyQuestion,
                                                   @RequestParam(name = "knowledgePoint", required = false) String knowledgePoint) {
         QueryWrapper<Judgement> queryWrapper = new QueryWrapper<>();
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER) && onlyShowMyQuestion){
+            queryWrapper.eq("create_teacher",DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1]);
+        }
         if (title != null && !"".equals(title)) {
             queryWrapper.like("title", title);
         }
@@ -123,6 +130,10 @@ public class JudgementController {
     @ApiOperation("批量添加判断题")
     @Transactional(rollbackFor = Exception.class)
     public Result addBatchJudgementQuestions(HttpServletRequest request) throws IOException {
+        String teacherNo = null;
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            teacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+        }
         MultipartFile multiFile = ((MultipartHttpServletRequest) request).getFile("file");
         assert multiFile != null;
         String fileName = multiFile.getOriginalFilename();
@@ -147,6 +158,7 @@ public class JudgementController {
             judgement.setLevel((int) row.getCell(3).getNumericCellValue());
             judgement.setSubjectSubordinate(subjectList.get(formatter.formatCellValue(row.getCell(4)).trim()));
             judgement.setAnalysis(formatter.formatCellValue(row.getCell(5)).trim());
+            judgement.setCreateTeacher(teacherNo);
             judgementService.save(judgement);
         }
         fis.close();
@@ -157,6 +169,10 @@ public class JudgementController {
     @ApiOperation("删除一道判断题")
     @ApiImplicitParam(name = "judgementId", value = "题目id")
     public Result deleteOneJudgementQuestion(@RequestParam int judgementId) {
+        QueryWrapper<ChoiceQuestion> questionQueryWrapper = new QueryWrapper<>();
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            questionQueryWrapper.eq("create_teacher",DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1]);
+        }
         return judgementService.removeById(judgementId) ? Result.success() : Result.failure(ResultCode.DELETE_FAILURE);
     }
 
@@ -166,6 +182,15 @@ public class JudgementController {
     public Result deleteBatchJudgementQuestions(@RequestBody List<Judgement> judgementList) {
         if (judgementList.size() == 0) {
             return Result.failure(ResultCode.PARAMS_INCORRECT);
+        }
+        //教师角色判断是否拥有权限
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            String currentTeacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+            for(Judgement question : judgementList){
+                if(!currentTeacherNo.equals(question.getCreateTeacher())){
+                    return Result.failure(ResultCode.AUTHORITY_ERROR);
+                }
+            }
         }
         List<Integer> idList = new ArrayList<>();
         judgementList.forEach(judgement -> idList.add(judgement.getId()));
@@ -184,6 +209,22 @@ public class JudgementController {
         if (isParamsCorrect) {
             return Result.failure(ResultCode.PARAMS_INCORRECT);
         }
-        return judgementService.saveOrUpdate(judgement) ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
+        boolean result;
+        //教师添加或更新问题
+        if(DgbSecurityUserHelper.isCurrentUserRoleTeacher()){
+            String currentTeacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
+            String createTeacherNo = judgementService.getById(judgement.getId()).getCreateTeacher();
+            //是更新自己的问题
+            judgement.setCreateTeacher(currentTeacherNo);
+            if(type==1 && currentTeacherNo.equals(createTeacherNo)) {
+                result = judgementService.updateById(judgement);
+            } else {
+                result = judgementService.save(judgement);
+            }
+        } else{
+            //管理员更新或添加
+            result = judgementService.saveOrUpdate(judgement);
+        }
+        return result ? Result.success() : Result.failure(ResultCode.UPDATE_FAILURE);
     }
 }

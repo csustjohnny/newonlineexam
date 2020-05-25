@@ -1,6 +1,8 @@
 package com.csust.onlineexam.controller;
 
+import com.csust.onlineexam.constant.Constant;
 import com.csust.onlineexam.service.impl.UserServiceImpl;
+import com.csust.onlineexam.util.DgbSecurityUserHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,23 @@ public class LoginController {
     @ApiOperation("登录界面")
     public String login() {
         return "login";
+    }
+    @GetMapping("")
+    @ApiOperation("登录界面")
+    public String index() {
+        System.out.println("请求主页");
+        if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
+            //返回教室界面
+            return "teacher";
+        }else if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_ADMIN)){
+            //返回教室界面
+            return "admin";
+        }else if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_STUDENT)){
+            //返回教室界面
+            return "student";
+        } else {
+            return "login";
+        }
     }
 
     @GetMapping("login/checkCode")

@@ -57,7 +57,6 @@ public class MybatisPlusGenerator {
         gc.setAuthor("johnNick");
         gc.setOpen(false);
         //生成文件是否会被覆盖
-
         gc.setFileOverride(true);
         gc.setActiveRecord(true);
         gc.setSwagger2(true);

@@ -8,5 +8,10 @@ package com.csust.onlineexam.constant;
  */
 public class Constant {
     public static final String XLSX_SUFFIX = "xlsx";
+    public static final String ROLE_TEACHER = "ROLE_TEACHER";
+    public static final String ROLE_STUDENT = "ROLE_STUDENT";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String LOGIN_URL = "/login";
+    public static final String POST_STRING = "post";
 
 }

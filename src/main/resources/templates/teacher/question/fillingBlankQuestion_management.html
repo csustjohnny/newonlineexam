@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>填空题管理教师端</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">题目</label>
+                            <div class="layui-input-inline">
+                                <label>
+                                    <input type="text" name="title" autocomplete="off" class="layui-input">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">知识点</label>
+                            <div class="layui-input-inline">
+                                <label>
+                                    <input type="text" name="knowledgePoint" autocomplete="off" class="layui-input">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label" style="font-size: 11px">只看我的问题？</label>
+                            <div class="layui-input-inline">
+                                <input type="radio" name="onlyShowMyQuestion" value="true" title="是">
+                                <input type="radio" name="onlyShowMyQuestion" value="false" title="否" checked="">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm data-add-btn"> 添加问题</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn"> 删除问题</button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="review">预览</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery.cookie.js"></script>
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
+<script>
+    layui.use(['table', 'form'], function () {
+        let table = layui.table,
+            form = layui.form;
+
+        table.render({
+            elem: '#currentTableId'
+            , url: '/question/filling-in-the-blank-question/getAllFillingBlankQuestions'
+            , toolbar: '#toolbarDemo'
+            , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            , defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }]
+            , cols: [
+                [{type: "checkbox", fixed: "left"}
+                    , {field: 'questionId', title: 'ID', align: "center",hide: true}
+                    , {field: 'question', title: '题目', align: "center"}
+                    , {field: 'blankOne', title: '一空答案', align: "center"}
+                    , {field: 'blankTwo', title: '二空答案', align: "center"}
+                    , {field: 'blankThree', title: '三空答案', align: "center"}
+                    , {field: 'blankFour', title: '四空答案', align: "center"}
+                    , {field: 'blankFive', title: '五空答案', align: "center"}
+                    , {field: 'knowledgePoint', title: '知识点', hide:true, align: "center"}
+                    , {field: 'level', title: '难度指数', hide:true, align: "center"}
+                    , {field: 'createTeacher', title: '创建老师', hide: true, align: "center"}
+                    , {field: 'subjectName', title: '所属学科', hide: true, align: "center"}
+                    , {field: 'blankCount', title: '填空数量', hide: true, align: "center"}
+                    , {title: '操作', minWidth: 180, templet: '#currentTableBar', fixed: "right", align: "center"}
+                ]
+            ]
+            , initSort: {
+                field: 'questionId',
+                type: 'asc'
+            }
+            , limit: 20
+            , page: true
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            data = data.field;
+            //执行搜索重载
+            table.reload('currentTableId', {
+                url: '/question/filling-in-the-blank-question/getAllFillingBlankQuestions'
+                , page: {
+                    curr: 1
+                }
+                , where: {
+                    title: data.title,
+                    onlyShowMyQuestion: data.onlyShowMyQuestion,
+                    knowledgePoint: data.knowledgePoint
+                }
+            }, 'data');
+            return false;
+        });
+        // 监听添加操作
+        $(".data-add-btn").on("click", function () {
+            let index = layer.open({
+                title: '添加填空题',
+                type: 2,
+                shade: 0.2,
+                maxmin: true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '/question/filling-in-the-blank-question/addFillingBlankQuestionView',
+            });
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+            return false;
+        });
+        // 监听删除多行操作
+        $(".data-delete-btn").on("click", function () {
+            let checkStatus = table.checkStatus('currentTableId')
+                , data = checkStatus.data;
+            if (data.length === 0) {
+                layer.alert("请先选择要删除的项目");
+                return;
+            }
+            layer.confirm('真的要删除所选行么？此操作不可撤回', function (index) {
+                $.ajax({
+                    type: "post"
+                    , url: "/question/filling-in-the-blank-question/deleteBatchQuestions"
+                    , dataType: "json"
+                    , contentType: "application/json"
+                    , data: JSON.stringify(data)
+                    , success: function (data) {
+                        if (data.code === 200) {
+                            layer.msg("删除成功");
+                            location.reload();
+                        } else {
+                            layer.alert(data.message);
+                        }
+                    }
+                });
+                layer.close(index);
+            });
+        });
+        //编辑和删除单行操作
+        table.on('tool(currentTableFilter)', function (obj) {
+            let data = obj.data;
+            $.cookie.json = true;
+            if (obj.event === 'edit') {
+                $.cookie('question', data,{path:'/question/filling-in-the-blank-question'});
+                let index = layer.open({
+                    title: '编辑选择题',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: '/question/filling-in-the-blank-question/editFillingBlankQuestion',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    $.ajax({
+                        type: 'post'
+                        , url: "/question/filling-in-the-blank-question/deleteOneQuestion"
+                        , data: {
+                            "id": data.questionId
+                        }
+                        , dataType: "json"
+                        , success: function (data) {
+                            if (data.code === 200) {
+                                layer.alert(data.message);
+                                obj.del();
+                            } else {
+                                layer.alert(data.message);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'review') {
+                //iframe层-父子操作
+                let  data = obj.data;
+                $.cookie.json = true;
+                $.cookie('test',data,{path:'/question/filling-in-the-blank-question'});
+                let index = layer.open({
+                    type: 2,
+                    title: "预览",
+                    area: ['100%', '100%'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    content: '/question/filling-in-the-blank-question/showOneFillingBlankQuestion',
+                    btn: '确定'
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>

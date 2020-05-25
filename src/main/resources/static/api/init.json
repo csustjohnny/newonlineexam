@@ -5,7 +5,7 @@
   "homeInfo": {
     "title": "首页",
     "icon": "fa fa-home",
-    "href": "welcome?mpi=m-p-i-0"
+    "href": ""
   },
   "logoInfo": {
     "title": "后台管理",
@@ -14,11 +14,11 @@
   },
   "menuInfo": {
     "institution": {
-      "title": "机构管理",
+      "title": "机构学科管理",
       "icon": "fa fa-address-book",
       "child": [
         {
-          "title": "机构管理",
+          "title": "机构学科管理",
           "href": "",
           "icon": "fa fa-cog",
           "target": "_self",
@@ -93,7 +93,6 @@
               "icon": "fa fa-file-excel-o",
               "target": "_self"
             }
-
           ]
         }
       ]
@@ -103,7 +102,7 @@
       "icon": "fa fa-slideshare",
       "child": [
         {
-          "title": "常规题管理",
+          "title": "题目管理",
           "href": "",
           "icon": "fa fa-meetup",
           "target": "",
@@ -143,7 +142,8 @@
                   "target": "_self"
                 }
               ]
-            }, {
+            },
+            {
               "title": "填空题",
               "icon": "fa fa-briefcase",
               "child": [
@@ -160,19 +160,33 @@
                   "target": "_self"
                 }
               ]
+            },
+            {
+              "title": "编程题",
+              "icon": "fa fa-briefcase",
+              "child": [
+                {
+                  "title": "问题列表",
+                  "href": "codeQuestion_management",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "增加题目",
+                  "href": "/question/code-question/showAddCodeQuestion",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                },
+                {
+                  "title": "批量导入题目",
+                  "href": "/question/filling-in-the-blank-question/showQuestionBatchAddView",
+                  "icon": "fa fa-calendar",
+                  "target": "_self"
+                }
+              ]
             }
-
-
-
           ]
         },
-        {
-          "title": "编程题管理",
-          "href": "page/error.html",
-          "icon": "fa fa-superpowers",
-          "target": "_self"
-        }
-      ,
         {
           "title": "考试管理",
           "icon": "fa fa-superpowers",

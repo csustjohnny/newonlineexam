@@ -207,7 +207,7 @@ public class FillingInTheBlankQuestionController {
         if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
             questionQueryWrapper.eq("create_teacher",DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1]);
         }
-        questionQueryWrapper.eq("id",id);
+        questionQueryWrapper.eq("question_id",id);
         return fillingInTheBlankQuestionService.remove(questionQueryWrapper) ? Result.success() : Result.failure(ResultCode.DELETE_FAILURE);
     }
     @PostMapping("saveOrUpdateOneQuestion")
@@ -225,13 +225,18 @@ public class FillingInTheBlankQuestionController {
         //教师添加或更新问题
         if(DgbSecurityUserHelper.getRoleList().contains(Constant.ROLE_TEACHER)){
             String currentTeacherNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1];
-            String createTeacherNo = fillingInTheBlankQuestionService.getById(fillingInTheBlankQuestion.getQuestionId()).getCreateTeacher();
-            //是更新自己的问题
-            fillingInTheBlankQuestion.setCreateTeacher(currentTeacherNo);
-            if(type==1 && currentTeacherNo.equals(createTeacherNo)) {
-                result = fillingInTheBlankQuestionService.updateById(fillingInTheBlankQuestion);
-            } else {
+            if(fillingInTheBlankQuestion.getQuestionId()==null){
+                //添加没有的问题
                 result = fillingInTheBlankQuestionService.save(fillingInTheBlankQuestion);
+            } else {
+                String createTeacherNo = fillingInTheBlankQuestionService.getById(fillingInTheBlankQuestion.getQuestionId()).getCreateTeacher();
+                //是自己的更新自己的问题
+                fillingInTheBlankQuestion.setCreateTeacher(currentTeacherNo);
+                if (type == 1 && currentTeacherNo.equals(createTeacherNo)) {
+                    result = fillingInTheBlankQuestionService.updateById(fillingInTheBlankQuestion);
+                } else {
+                    result = fillingInTheBlankQuestionService.save(fillingInTheBlankQuestion);
+                }
             }
         } else{
             //管理员更新或添加

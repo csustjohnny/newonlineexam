@@ -85,7 +85,7 @@ public class AdminController {
     @ApiOperation("管理员首页界面")
     public ModelAndView adminWelcome() {
         ModelAndView adminWelcome = new ModelAndView();
-        adminWelcome.setViewName("admin_welcome");
+        adminWelcome.setViewName("welcomeAdmin");
         return adminWelcome;
     }
 
@@ -153,13 +153,14 @@ public class AdminController {
         return subjectManagement;
     }
 
-    @GetMapping("/course_management")
-    @ApiOperation("学科管理界面")
-    public ModelAndView courseManagement() {
-        ModelAndView courseManagement = new ModelAndView();
-        courseManagement.setViewName("admin/course_management");
-        return courseManagement;
+    @GetMapping("/grade_analysis")
+    @ApiOperation("成绩分析界面")
+    public ModelAndView gradeAnalysis() {
+        ModelAndView subjectManagement = new ModelAndView();
+        subjectManagement.setViewName("admin/grade_analysis");
+        return subjectManagement;
     }
+
 
     @GetMapping("teacher_management")
     @ApiOperation("教师管理界面")
@@ -199,6 +200,14 @@ public class AdminController {
     public ModelAndView fillingBlankQuestionManagement() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/admin/question/fillingBlankQuestion_management");
+        return modelAndView;
+    }
+
+    @GetMapping("index_management")
+    @ApiOperation("指标点管理界面")
+    public ModelAndView index_management() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/admin/index_management");
         return modelAndView;
     }
 

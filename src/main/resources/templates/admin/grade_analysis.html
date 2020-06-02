@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>成绩分析</title>
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+    <link rel="stylesheet" href="/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+    <style>
+        .layui-form-pane .layui-input-inline {
+            margin-left: -10px;
+        }
+    </style>
+</head>
+<body style="margin: 0;padding: 0;">
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">学院</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" value="计算机与通信工程学院" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">专业班级</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
+
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">学期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="name" value="2016-2017-1学期" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <div class="layui-card">
+            <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>达成度分析</div>
+            <div class="layui-card-body">
+                <div id="echarts-records" style="width: 100%;min-height:500px"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/js/layConfig.js?v=1.0.4" charset="utf-8"></script>
+<script src="/js/echarts.min.js?v=1.0.4" charset="utf-8"></script>
+
+<script type="text/javascript">
+    let echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+    let option = {
+        title: {
+            text: '截止2016-2017-1学期，学院毕业能力达成情况统计'
+        },
+        tooltip: {},
+        legend: {
+            data: ['专业要求', '实际达成']
+        },
+        radar: {
+            // shape: 'circle',
+            name: {
+                textStyle: {
+                    color: '#fff',
+                    backgroundColor: '#999',
+                    borderRadius: 3,
+                    padding: [3, 5]
+                }
+            },
+            indicator: [
+                { name: '1、工程知识', max: 1},
+                { name: '2、问题分析', max: 1},
+                { name: '3、设计/开发解决方案', max: 1},
+                { name: '4、研究', max: 1},
+                { name: '5、使用现代工具', max: 1},
+                { name: '5、使用现代工具', max: 1},
+                { name: '6、工程与社会', max: 1},
+                { name: '7、环境和可持续发展', max: 1},
+                { name: '8、职业规范', max: 1},
+                { name: '9、个人与团队', max: 1},
+                { name: '10、沟通', max: 1},
+                { name: '11、项目管理', max: 1},
+                { name: '12、终身学习', max: 1},
+            ]
+        },
+        series: [{
+            name: '预算 vs 开销（Budget vs spending）',
+            type: 'radar',
+            // areaStyle: {normal: {}},
+            data: [
+                {
+                    value: [0.25, 0.25, 0.25, 0.3, 0.25, 0.35,0.23,0.25,0.35,0.25,0.30,0.34],
+                    name: '专业要求'
+                },
+                {
+                    value: [0.2, 0.23, 0.2, 0.26, 0.23, 0.3,0.2,0.25,0.35,0.26,0.28,0.3],
+                    name: '实际达成'
+                }
+            ]
+        }]
+    };
+    echartsRecords.setOption(option);
+
+    // echarts 窗口缩放自适应
+    window.onresize = function () {
+        echartsRecords.resize();
+    }
+    layui.use(['layer'], function () {
+        let $ = layui.jquery;
+
+    })
+</script>
+</body>
+</html>

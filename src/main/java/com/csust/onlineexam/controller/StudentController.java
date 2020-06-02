@@ -9,6 +9,7 @@ import com.csust.onlineexam.entity.Student;
 import com.csust.onlineexam.service.impl.Exam2studentServiceImpl;
 import com.csust.onlineexam.service.impl.ExamServiceImpl;
 import com.csust.onlineexam.service.impl.StudentServiceImpl;
+import com.csust.onlineexam.service.impl.TestPaperServiceImpl;
 import com.csust.onlineexam.util.DgbSecurityUserHelper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.ModelAndView;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,19 +37,27 @@ public class StudentController {
     private final StudentServiceImpl studentService;
     private final ExamServiceImpl examService;
     private final Exam2studentServiceImpl exam2studentService;
-    @Autowired
+    private final TestPaperServiceImpl testPaperService;
     PasswordEncoder passwordEncoder;
     @Autowired
-    public StudentController(StudentServiceImpl studentService, ExamServiceImpl examService, Exam2studentServiceImpl exam2studentService) {
+    public StudentController(StudentServiceImpl studentService, ExamServiceImpl examService, Exam2studentServiceImpl exam2studentService, TestPaperServiceImpl testPaperService, PasswordEncoder passwordEncoder) {
         this.studentService = studentService;
         this.examService = examService;
         this.exam2studentService = exam2studentService;
+        this.testPaperService = testPaperService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/index")
     public ModelAndView index() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("student");
+        return modelAndView;
+    }
+    @GetMapping("/test")
+    public ModelAndView test(){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/student/test");
         return modelAndView;
     }
 
@@ -78,14 +91,34 @@ public class StudentController {
         studentService.updateById(student);
         return Result.success();
     }
+
     @GetMapping("/getExams")
+    @ApiOperation("获取考试信息")
     public Result getExams(){
         String studentNo = DgbSecurityUserHelper.getCurrentUser().getUsername().split(" ")[1].trim();
-        System.out.println(studentNo);
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("t_student.student_no",studentNo);
+        //queryWrapper.lt("t_exam.end_time", LocalDateTime.now());
         Result result = Result.success();
         result.setData(exam2studentService.getStudentsExam(queryWrapper));
+        return result;
+    }
+    @GetMapping("getOneExam")
+    public Result getOneExam(@RequestParam Integer examId){
+        Exam exam = examService.getById(examId);
+        if(exam==null){
+            return  Result.failure(ResultCode.NO_EXIST);
+        } else{
+            Result result = Result.success();
+            result.setData(exam);
+            return result;
+        }
+    }
+    @GetMapping("/getExamQuestions")
+    public Result getExamQuestions(@RequestParam Integer examId){
+        Result result = Result.success();
+        Map<String,Object> questions = testPaperService.getQuestionsByExamId(examId);
+        result.setData(questions);
         return result;
     }
 }

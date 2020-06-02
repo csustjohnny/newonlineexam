@@ -111,4 +111,8 @@ public class ExamController {
             return result;
         }
     }
+    @PostMapping("deleteOneExam")
+    public Result deleteOneExam(@RequestParam Integer examId){
+        return examService.removeById(examId)?Result.success():Result.failure(ResultCode.DELETE_FAILURE);
+    }
 }

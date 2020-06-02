@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csust.onlineexam.mapper.CodeQuestionMapper">
 
+    <select id="getStudentCodeQuestionByExamId" resultType="com.csust.onlineexam.dto.StudentCodeQuestionDTO">
+        select ch.id,ch.title,ch.description,ch.input,ch.output,
+               ch.memory_limit,ch.time_limit,ch.sample_input,ch.sample_output,
+               ch.`level`,ch.hint
+        from t_test_paper te, t_code_question	ch
+        where te.question_type = 'code_question'
+          and te.question_id = ch.id
+          and te.exam_id = #{id}
+    </select>
 </mapper>

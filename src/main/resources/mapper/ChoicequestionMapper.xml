@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csust.onlineexam.mapper.ChoiceQuestionMapper">
 
+
+    <select id="getStudentChoiceQuestionsByExamId"
+            resultType="com.csust.onlineexam.dto.StudentChoiceQuestionDTO">
+        select ch.id,ch.title,ch.option_A,ch.option_B,ch.option_C,ch.option_D,ch.option_E,ch.option_F,ch.is_multiple
+        from t_test_paper te, t_choice_question ch
+        where te.question_type = 'choice_question'
+          and te.question_id = ch.id
+          and te.exam_id = #{examId}
+    </select>
 </mapper>

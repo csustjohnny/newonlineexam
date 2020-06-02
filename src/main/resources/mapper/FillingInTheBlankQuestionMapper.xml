@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csust.onlineexam.mapper.FillingInTheBlankQuestionMapper">
 
+    <select id="getStudentFillingQuestionsByExamId"
+            resultType="com.csust.onlineexam.dto.StudentFillingQuestionDTO">
+        select ch.question_id,ch.question,ch.blank_one,
+               ch.blank_two,ch.blank_three,ch.blank_four,ch.blank_five,ch.blank_count
+        from t_test_paper te, t_filling_in_the_blank_question	ch
+        where te.question_type = 'filling_in_the_blank_question'
+          and te.question_id = ch.question_id
+          and te.exam_id = #{examId}
+    </select>
 </mapper>

@@ -1,1 +1,0 @@
-alter table t_code_question drop column answer;

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>选择题目</title>
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+</head>
+<body>
+<fieldset class="table-search-fieldset">
+    <legend>搜索信息</legend>
+    <div style="margin: 10px 10px 10px 10px">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">题目</label>
+                    <div class="layui-input-inline">
+                        <label>
+                            <input type="text" name="title" autocomplete="off" class="layui-input">
+                        </label>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">知识点</label>
+                    <div class="layui-input-inline">
+                        <label>
+                            <input type="text" name="knowledgePoint" autocomplete="off" class="layui-input">
+                        </label>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="font-size: 11px">只看我的问题？</label>
+                    <div class="layui-input-inline">
+                        <input type="radio" name="onlyShowMyQuestion" value="true" title="是">
+                        <input type="radio" name="onlyShowMyQuestion" value="false" title="否" checked="">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                            lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</fieldset>
+<table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+</body>
+</html>

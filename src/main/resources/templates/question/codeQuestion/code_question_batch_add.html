@@ -92,7 +92,7 @@
             , bindAction: '#uploadFPS'
             , done: function (res) {
                 layer.closeAll('loading'); //关闭loading
-                layer.msg('上传成功');
+                layer.msg(res.message);
                 console.log(res);
             }
         });

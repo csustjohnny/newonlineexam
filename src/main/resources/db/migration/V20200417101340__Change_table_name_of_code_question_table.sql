@@ -1,1 +1,0 @@
-rename table t_codequestion to t_code_question;

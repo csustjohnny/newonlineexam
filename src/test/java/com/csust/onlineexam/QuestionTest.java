@@ -2,6 +2,7 @@ package com.csust.onlineexam;
 
 import com.csust.onlineexam.entity.ChoiceQuestion;
 import com.csust.onlineexam.entity.CodeQuestion;
+import com.csust.onlineexam.mapper.ChoiceQuestionMapper;
 import com.csust.onlineexam.service.impl.ChoiceQuestionServiceImpl;
 import com.csust.onlineexam.service.impl.CodeQuestionServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author ：Lenovo
@@ -31,7 +34,8 @@ public class QuestionTest {
     private ChoiceQuestionServiceImpl choiceQuestionService;
     @Autowired
     private CodeQuestionServiceImpl codeQuestionService;
-
+    @Autowired
+    ChoiceQuestionMapper choiceQuestionMapper;
    @Test
    public void testOptionQuestion(){
        ChoiceQuestion choicequestion = new ChoiceQuestion();
@@ -47,6 +51,12 @@ public class QuestionTest {
        choicequestion.setAnswer("A,C,D,E");
        choicequestion.setIsMultiple(true);
        choiceQuestionService.updateById(choicequestion);
+   }
+   @Test
+   public void testQuestionSearch(){
+       List<Integer> idList = new ArrayList<>(1);
+       idList.add(3);
+       choiceQuestionService.listByIds(idList).forEach(System.out::println);
    }
    @Test
    public void testXML() throws ParserConfigurationException, IOException, SAXException {
@@ -81,6 +91,11 @@ public class QuestionTest {
                }*/
            }
        }
+   }
+   @Test
+   public void testGetChoiceQuestion(){
+       choiceQuestionMapper.getStudentChoiceQuestionsByExamId(1)
+               .forEach(System.out::println);
    }
 
 }

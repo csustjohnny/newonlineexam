@@ -19,7 +19,70 @@
     <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
     <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style id="layuimini-bg-color">
+
+    <style type="text/css">
+        .exam {
+            width: 100%;
+            border-radius: 3px;
+            background: #fff;
+            height: 150px;
+            padding: 30px 15px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            color: #8392a5;
+        }
+        .exam h3 {
+            margin-top: 0px;
+            font-size: 18px;
+            color: black;
+        }
+        .exam button {
+            border-radius: 3px;
+            padding: 0 15px;
+            line-height: 30px;
+            background-color: #ffffff;
+            border: 0px solid #eff2f7;
+            font-size: 14px;
+            width: 100px;
+            height: 30px;
+        }
+        .exam button .normal {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            text-align: center;
+            position: relative;
+            margin-right: 8px;
+            background-color: #d5f1d8;
+        }
+        .exam button span {
+            display: inline-block;
+            color: #8392a5;
+            font-size: 12px;
+            height: 26px;
+            line-height: 26px;
+        }
+        .exam .handle {
+            width: 100%;
+            /*font-size: 0;*/
+            margin-top: 15px;
+        }
+        .exam .handle > a {
+            display: inline-block;
+            margin-right: 10px;
+            text-align: center;
+            width: 35px;
+            height: 35px;
+            color: #8392a5;
+            border-radius: 50%;
+            border: 1px solid #eff3f7;
+            line-height: 30px;
+            position: relative;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body class="layui-layout-body layuimini-all">
@@ -47,40 +110,8 @@
 <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
     <legend>考试列表</legend>
 </fieldset>
-<div style="margin: 10px 10px 10px 10px">
-    <form class="layui-form layui-form-pane" action="">
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">学院</label>
-                <div class="layui-input-inline">
-                    <input type="text" name="schoolName" placeholder="(如：计算机与通信工程学院）" autocomplete="off"
-                           class="layui-input">
-                </div>
-            </div>
+<div id="myExamList" class="layui-row">
 
-            <div class="layui-inline">
-                <button type="submit" class="layui-btn layui-btn-primary" lay-submit
-                        lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
-                </button>
-            </div>
-        </div>
-    </form>
-</div>
-<div id="myExamList" class="row">
-    <div class="col-md-4">
-        <div class="exam"><h3>小学教师资格考试-2019</h3>
-            <p><span class="time">2019-08-15 09:00:00</span></p>
-            <div>
-                <button><i class="normal"><small></small></i> <span>进行中</span></button>
-            </div>
-            <div class="handle"><a onclick="alert('开发中')"> <i class="glyphicon glyphicon-user"></i>
-                <span><small></small>0 / 100</span> </a> <a onclick="alert('开发中')"> <i
-                    class="glyphicon glyphicon-list"></i> <span><small></small>往期成绩</span> </a> <a
-                    onclick="alert('开发中')"> <i class="glyphicon glyphicon-comment"></i> <span><small></small>考试详情</span>
-            </a> <a onclick="toMyPaper(1)"> <i class="glyphicon glyphicon-play"></i> <span><small></small>开始考试</span>
-            </a></div>
-        </div>
-    </div>
 </div>
 <script src="/lib/layui-v2.5.6/layui.js?v=1.0.4" charset="utf-8"></script>
 <script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
@@ -92,11 +123,20 @@
             async: false,
             url: "/student/getExams",
             success: function (data) {
-                console.log(data);
-                /*for (let i = 0; i < data.length; i++) {
-                    $("#classId").append("<option value=\"" +
-                        data[i].classId + "\">" + data[i].className + "</option>");
-                }*/
+                data = data.data;
+                for (let i = 0; i < data.length; i++) {
+                    $('#myExamList').append('<div class="layui-col-md4">' +
+                        '        <div class="exam"><h3>'+data[i].examTitle+'</h3>' +
+                        '            <p><span class="time">'+ data[i].startTime +'</span></p><div>' +
+                        '                <button><i class="normal"><small></small></i> <span>进行中</span></button>' +
+                        '            </div>' +
+                        '            <div class="handle"><a onclick="alert(\'开发中\')"> <i class="fa fa-user-circle fa-2x"></i>' +
+                        '                 </a><a href="/student/test?exam_id='+data[i].examId+
+                        '"> <i class="fa fa-play fa-2x"></i>' +
+                        '            </a></div>' +
+                        '        </div>' +
+                        '    </div>')
+                }
             }
         });
     })

@@ -7,6 +7,7 @@ import com.csust.onlineexam.entity.Student;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,6 @@ import java.util.Map;
  * @since 2020-03-18
  */
 public interface IStudentService extends IService<Student> {
-
 
     /**
      * 获取学生详细信息

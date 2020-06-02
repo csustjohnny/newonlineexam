@@ -1,22 +1,24 @@
 ﻿/*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/3/18 12:00:53                           */
+/* Created on:     2020/5/26 15:42:10                           */
 /*==============================================================*/
 
 
 drop table if exists t_admin;
 
-drop table if exists t_choiceQuestion;
+drop table if exists t_choice_question;
 
-drop table if exists t_codeQuestion;
+drop table if exists t_code_question;
 
-drop table if exists t_curse;
+drop table if exists t_course;
 
 drop table if exists t_student_exam_info;
 
 drop table if exists t_exam2student;
 
 drop table if exists t_test_paper;
+
+drop table if exists t_index;
 
 drop table if exists t_exam;
 
@@ -38,7 +40,6 @@ drop table if exists t_department;
 
 drop table if exists t_school;
 
-
 /*==============================================================*/
 /* Table: t_admin                                               */
 /*==============================================================*/
@@ -51,11 +52,11 @@ create table t_admin
 );
 
 /*==============================================================*/
-/* Table: t_choiceQuestion                                      */
+/* Table: t_choice_question                                     */
 /*==============================================================*/
-create table t_choiceQuestion
+create table t_choice_question
 (
-    id                   int not null,
+    id                   int not null auto_increment,
     title                text not null comment '题目描述',
     option_A             varchar(255),
     option_B             varchar(255),
@@ -69,7 +70,7 @@ create table t_choiceQuestion
     level                int comment '难度指数',
     create_teacher       varchar(9),
     subject_subordinate  int(11),
-    is_multiple          bit,
+    is_multiple          bit not null,
     primary key (id)
 );
 
@@ -87,31 +88,32 @@ create table t_class_info
 );
 
 /*==============================================================*/
-/* Table: t_codeQuestion                                        */
+/* Table: t_code_question                                       */
 /*==============================================================*/
-create table t_codeQuestion
+create table t_code_question
 (
     id                   int(11) not null,
     title                varchar(200) not null,
     description          text,
-    input                text,
-    output               text,
-    sample_input         text,
-    sample_output        text,
-    test_input           text,
-    test_output          text,
-    knowledge_point      varchar(50),
+    input                text comment '输入说明',
+    output               text comment '输出说明',
+    memory_limit         int(11),
+    time_limit           int(11),
+    sample_input         text comment '样例输入',
+    sample_output        text comment '样例输出',
+    test_input           text comment '测试输入',
+    test_output          text comment '测试输出',
+    knowledge_point      varchar(50) comment '知识点',
     level                int,
-    hint                 text,
+    hint                 text comment '提示',
     create_teacher       varchar(9),
-    answer               text,
     primary key (id)
 );
 
 /*==============================================================*/
-/* Table: t_curse                                               */
+/* Table: t_course                                              */
 /*==============================================================*/
-create table t_curse
+create table t_course
 (
     class_no             int not null,
     subject_id           int(11) not null,
@@ -145,6 +147,7 @@ create table t_exam
     create_time          datetime,
     modify_time          datetime,
     ip_limit             varchar(50) comment '限制IP地址一般用匹配方式，一般用192.28.3.*,192.18.6.*,等形式',
+    create_teacher       varchar(9),
     primary key (exam_id)
 );
 
@@ -175,7 +178,20 @@ create table t_filling_in_the_blank_question
     knowledge_point      varchar(50) comment '多个知识点用空格隔开
             ',
     level                int,
+    blank_count          int,
     primary key (question_id)
+);
+
+/*==============================================================*/
+/* Table: t_index                                               */
+/*==============================================================*/
+create table t_index
+(
+    ID                   int not null auto_increment,
+    index_description    text,
+    index_name           varchar(20) not null,
+    department           int not null,
+    primary key (ID)
 );
 
 /*==============================================================*/
@@ -183,13 +199,14 @@ create table t_filling_in_the_blank_question
 /*==============================================================*/
 create table t_judgement
 (
-    id                   int not null,
+    id                   int not null auto_increment,
     title                varchar(255) not null,
     answer               bit,
     knowledge_point      varchar(50),
     level                int,
     create_teacher       varchar(9),
     subject_subordinate  int(11),
+    analysis             varchar(255),
     primary key (id)
 );
 
@@ -210,7 +227,7 @@ create table t_student
 (
     student_no           varchar(12) not null,
     name                 varchar(10),
-    sex                  enum("男","女"),
+    sex                  enum('男','女'),
     phone                char(11),
     class_id             int not null,
     qq                   varchar(11),
@@ -227,7 +244,7 @@ create table t_student_exam_info
     student_no           varchar(12) not null,
     exam_id              int(11) not null,
     question_id          int(11) not null,
-    question_type        enum("选择题","判断题","填空题","编程题") not null,
+    question_type        enum('选择题','判断题','填空题','编程题') not null,
     answer               text,
     primary key (student_no, exam_id, question_id, question_type)
 );
@@ -237,8 +254,8 @@ create table t_student_exam_info
 /*==============================================================*/
 create table t_subject
 (
-    subject_id           int(11) not null,
-    curse_name           varchar(100),
+    subject_id           int(11) not null auto_increment,
+    course_name          varchar(100),
     primary key (subject_id)
 );
 
@@ -254,6 +271,7 @@ create table t_teacher
     password             varchar(100),
     qq                   varchar(11),
     wechat               varchar(20),
+    sex                  enum('男','女'),
     primary key (teacher_no)
 );
 
@@ -272,16 +290,17 @@ create table t_teacher_department
 create table t_test_paper
 (
     exam_id              int(11) not null,
-    question_type        varchar(50) not null,
+    question_type        enum('choice_question','filling_in_the_blank_question','judgement_question','code_question') not null,
     question_id          int(11) not null,
+    index_id             int,
     question_order       int,
     primary key (exam_id, question_type, question_id)
 );
 
-alter table t_choiceQuestion add constraint FK_choiceOpt_teacher_fk foreign key (create_teacher)
+alter table t_choice_question add constraint FK_choiceOpt_teacher_fk foreign key (create_teacher)
     references t_teacher (teacher_no) on delete restrict on update cascade;
 
-alter table t_choiceQuestion add constraint FK_choiceQuestion_subject_fk foreign key (subject_subordinate)
+alter table t_choice_question add constraint FK_choiceQuestion_subject_fk foreign key (subject_subordinate)
     references t_subject (subject_id) on delete restrict on update restrict;
 
 alter table t_class_info add constraint FK_class_depart_fk foreign key (department_id)
@@ -290,20 +309,23 @@ alter table t_class_info add constraint FK_class_depart_fk foreign key (departme
 alter table t_class_info add constraint FK_class_teacher_fk foreign key (teacher)
     references t_teacher (teacher_no) on delete set null on update cascade;
 
-alter table t_codeQuestion add constraint FK_codeQuestion_teacher_fk foreign key (create_teacher)
+alter table t_code_question add constraint FK_codeQuestion_teacher_fk foreign key (create_teacher)
     references t_teacher (teacher_no) on delete restrict on update restrict;
 
-alter table t_curse add constraint FK_course_class_fk foreign key (class_no)
+alter table t_course add constraint FK_course_class_fk foreign key (class_no)
     references t_class_info (class_id) on delete restrict on update restrict;
 
-alter table t_curse add constraint FK_course_subject_fk foreign key (subject_id)
+alter table t_course add constraint FK_course_subject_fk foreign key (subject_id)
     references t_subject (subject_id) on delete restrict on update restrict;
 
-alter table t_curse add constraint FK_course_teacher_fk foreign key (course_teacher)
+alter table t_course add constraint FK_course_teacher_fk foreign key (course_teacher)
     references t_teacher (teacher_no) on delete restrict on update restrict;
 
 alter table t_department add constraint FK_depart_school_fk foreign key (school_code)
     references t_school (school_code) on delete restrict on update cascade;
+
+alter table t_exam add constraint FK_Reference_25 foreign key (create_teacher)
+    references t_teacher (teacher_no) on delete restrict on update restrict;
 
 alter table t_exam2student add constraint FK_exam2student_exam_fk foreign key (exam_id)
     references t_exam (exam_id) on delete restrict on update restrict;
@@ -316,6 +338,9 @@ alter table t_filling_in_the_blank_question add constraint FK_fillingBlankQuesti
 
 alter table t_filling_in_the_blank_question add constraint FK_fillingQuestion_teacher_fk foreign key (create_teacher)
     references t_teacher (teacher_no) on delete restrict on update restrict;
+
+alter table t_index add constraint FK_Reference_24 foreign key (department)
+    references t_department (department_id) on delete restrict on update restrict;
 
 alter table t_judgement add constraint FK_judgementQuestion_subject_fk foreign key (subject_subordinate)
     references t_subject (subject_id) on delete restrict on update restrict;
@@ -337,6 +362,9 @@ alter table t_teacher_department add constraint FK_Reference_21 foreign key (dep
 
 alter table t_teacher_department add constraint FK_Reference_22 foreign key (teacher_no)
     references t_teacher (teacher_no) on delete restrict on update restrict;
+
+alter table t_test_paper add constraint FK_Reference_23 foreign key (index_id)
+    references t_index (ID) on delete restrict on update restrict;
 
 alter table t_test_paper add constraint FK_paper_exam_table foreign key (exam_id)
     references t_exam (exam_id) on delete restrict on update restrict;

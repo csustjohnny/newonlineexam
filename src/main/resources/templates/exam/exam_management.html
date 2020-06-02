@@ -57,7 +57,7 @@
         <script type="text/html" id="toolbarDemo">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm data-add-btn"> 添加考试</button>
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn"> 删除问题</button>
+<!--                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn"> 删除问题</button>-->
             </div>
         </script>
 
@@ -107,27 +107,25 @@
                 field: 'examId',
                 type: 'asc'
             }
-            , limit: 30
-            , page: true
+            //, limit: 30
+            //, page: true
         });
 
         // 监听搜索操作
-        form.on('submit(data-search-btn)', function (data) {
+        /*form.on('submit(data-search-btn)', function (data) {
             data = data.field;
             //执行搜索重载
             table.reload('currentTableId', {
-                url: '/question/choice-question/getAllChoiceQuestions'
+                url: '/question/getCreatedExams'
                 , page: {
                     curr: 1
                 }
                 , where: {
                     title: data.title,
-                    onlyShowMyQuestion: data.onlyShowMyQuestion,
-                    knowledgePoint: data.knowledgePoint
                 }
             }, 'data');
             return false;
-        });
+        });*/
         // 监听添加操作
         $(".data-add-btn").on("click", function () {
             let index = layer.open({
@@ -144,33 +142,7 @@
             });
             return false;
         });
-        // 监听删除多行操作
-        $(".data-delete-btn").on("click", function () {
-            let checkStatus = table.checkStatus('currentTableId')
-                , data = checkStatus.data;
-            if (data.length === 0) {
-                layer.alert("请先选择要删除的项目");
-                return;
-            }
-            layer.confirm('真的要删除所选行么？此操作不可撤回', function (index) {
-                $.ajax({
-                    type: "post"
-                    , url: "/question/choice-question/deleteBatchChoiceQuestion"
-                    , dataType: "json"
-                    , contentType: "application/json"
-                    , data: JSON.stringify(data)
-                    , success: function (data) {
-                        if (data.code === 200) {
-                            layer.msg("删除成功");
-                            location.reload();
-                        } else {
-                            layer.alert(data.message);
-                        }
-                    }
-                });
-                layer.close(index);
-            });
-        });
+
         //编辑和删除单行操作
         table.on('tool(currentTableFilter)', function (obj) {
             let data = obj.data;
@@ -194,9 +166,9 @@
                 layer.confirm('真的删除行么', function (index) {
                     $.ajax({
                         type: 'post'
-                        , url: "/question/code-question/deleteOneQuestion"
+                        , url: "/exam/deleteOneExam"
                         , data: {
-                            "id": data.id
+                            "examId": data.examId
                         }
                         , dataType: "json"
                         , success: function (data) {

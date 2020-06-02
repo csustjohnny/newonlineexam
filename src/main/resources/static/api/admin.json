@@ -5,7 +5,7 @@
   "homeInfo": {
     "title": "首页",
     "icon": "fa fa-home",
-    "href": ""
+    "href": "/admin/welcome"
   },
   "logoInfo": {
     "title": "后台管理",
@@ -56,6 +56,12 @@
               "target": "_self"
             }
           ]
+        },
+        {
+          "title": "指标点管理",
+          "href": "/admin/index_management",
+          "icon": "fa fa-tachometer",
+          "target": "_self"
         }
       ]
     },
@@ -208,6 +214,18 @@
             {
               "title": "编程题管理",
               "href": "page/error.html",
+              "icon": "fa fa-superpowers",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "成绩管理",
+          "icon": "fa fa-superpowers",
+          "child": [
+            {
+              "title": "达成度查看",
+              "href": "/admin/grade_analysis",
               "icon": "fa fa-superpowers",
               "target": "_self"
             }

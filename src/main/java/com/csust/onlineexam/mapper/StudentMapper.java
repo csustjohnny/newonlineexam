@@ -27,6 +27,5 @@ public interface StudentMapper extends BaseMapper<Student> {
      * @param wrapper 查询条件
      * @return 查询结果
      */
-
     List<Map<String,Object>> getStudentInfoList(Page<Map<String,Object>> page, @Param(Constants.WRAPPER) Wrapper<Student> wrapper);
 }

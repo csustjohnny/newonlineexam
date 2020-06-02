@@ -47,12 +47,23 @@ public class AdminCourseController {
         modelAndView.setViewName("/admin/course_management");
         return modelAndView;
     }
-
     @GetMapping("course_batch_add")
     public ModelAndView showCourseBatchAdd() {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("/admin/course_batch_add");
         return modelAndView;
+    }
+    @GetMapping("getAllCourses")
+    public Map<String,Object> getAllCourses(@RequestParam(name = "page") Integer current,
+                                                  @RequestParam Integer limit){
+        QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
+        Page<Map<String, Object>> page = new Page<>(current, limit);
+        Map<String, Object> result = new HashMap<>(2);
+        result.put("code", 0);
+        Page<Map<String, Object>> coursePage = courseService.getCourseInfoList(page,queryWrapper );
+        result.put("data", coursePage.getRecords());
+        result.put("count", coursePage.getTotal());
+        return result;
     }
 
 

@@ -36,6 +36,7 @@ public class TeacherController {
 
     private final TeacherServiceImpl teacherService;
     private final CourseServiceImpl courseService;
+
     @Autowired
     public TeacherController(TeacherServiceImpl teacherService, CourseServiceImpl courseService) {
         this.teacherService = teacherService;
@@ -47,6 +48,13 @@ public class TeacherController {
     public ModelAndView getIndex() {
         ModelAndView teacher = new ModelAndView();
         teacher.setViewName("teacher");
+        return teacher;
+    }
+
+    @GetMapping("/welcome")
+    public ModelAndView welcome() {
+        ModelAndView teacher = new ModelAndView();
+        teacher.setViewName("welcomeAdmin");
         return teacher;
     }
 

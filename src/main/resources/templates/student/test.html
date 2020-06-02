@@ -21,9 +21,6 @@
                     <div class="layui-card">
                         <div class="layui-card-header ">
                             <div class="question_title">选择题</div>
-                            <div class="question_operation">
-                                <a title="新增题目" href="#" id="aq1" class="addQuestionBtn"> <span class="fa fa-plus"></span></a>
-                            </div>
                         </div>
                         <div class="layui-card-body">
                             <ul id="choiceQuestionList">
@@ -34,9 +31,6 @@
                     <div class="layui-card">
                         <div class="layui-card-header">
                             <div class="question_title">判断题</div>
-                            <div class="question_operation">
-                            <a title="新增题目" id="aq2" class="addQuestionBtn"> <span class="fa fa-plus"></span></a>
-                            </div>
                         </div>
                         <div class="layui-card-body">
                             <ul id="judgementQuestionList">
@@ -47,9 +41,6 @@
                     <div class="layui-card">
                         <div class="layui-card-header">
                             <div class="question_title">填空题</div>
-                            <div class="question_operation">
-                                <a title="新增题目" id="aq3" class="addQuestionBtn"> <span class="fa fa-plus"></span></a>
-                            </div>
                         </div>
                         <div class="layui-card-body">
                             <ul id="fillingBlankQuestionList">
@@ -60,9 +51,6 @@
                     <div class="layui-card">
                         <div class="layui-card-header">
                             <div class="question_title">编程题</div>
-                            <div class="question_operation">
-                                <a title="新增题目" id="aq4" class="addQuestionBtn"> <span class="fa fa-plus"></span></a>
-                            </div>
                         </div>
                         <div class="layui-card-body">
                             <ul id="codeQuestionList">
@@ -255,7 +243,7 @@
         $.ajax({
             type: "get",
             async: false,
-            url: "/exam/getOneExam",
+            url: "/student/getOneExam",
             data: {
                 examId: getURLParameter("exam_id")
             },
@@ -272,7 +260,7 @@
         $.ajax({
             type: "get",
             async: false,
-            url: "/test-paper/getExamQuestions",
+            url: "/student/getExamQuestions",
             data: {
                 examId: getURLParameter("exam_id")
             },
@@ -302,7 +290,7 @@
                     })
                     form.render();
                     //显示填空题
-                    let fillingBlankList = data.data.filling_blank_question;
+                    let fillingBlankList = data.data.filling_question;
                     $('#fillingBlankQuestionCount').html(fillingBlankList.length);
                     $.each(fillingBlankList, function (k, v) {
                         $('#fillingBlankQuestionIconList').append('<li> <a id="fl_card_' +

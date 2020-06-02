@@ -2,4 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.csust.onlineexam.mapper.JudgementMapper">
 
+    <select id="getStudentJudgementsByExamId"
+            resultType="com.csust.onlineexam.dto.StudentJudgementQuestionDTO">
+        select ch.id,ch.title
+        from t_test_paper te, t_judgement	ch
+        where te.question_type = 'judgement_question'
+          and te.question_id = ch.id
+          and te.exam_id = #{examId}
+    </select>
 </mapper>

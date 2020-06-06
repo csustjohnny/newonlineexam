@@ -16,7 +16,13 @@
     <div class="layui-row layui-col-space15">
         <div class="layui-col-md9">
             <div class="layui-card">
-                <div style="background: #009E94" class="layui-card-header exam-title" id="exam_title"></div>
+                <div style="background: #009E94" class="layui-card-header exam_header" >
+                    <div class="exam-title" id="exam_title">
+                    </div>
+                    <div>
+                        <button type="button" id="showAuto" class="layui-btn layui-btn-normal layui-btn-sm">自动生成</button>
+                    </div>
+                </div>
                 <div class="layui-card-body">
                     <div class="layui-card">
                         <div class="layui-card-header ">
@@ -138,11 +144,10 @@
 </div>
 <script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
 <script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
-<script type="text/javascript">
-    function getURLParameter(name) {
-        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
-    }
+<script src="/lib/jquery-3.4.1/jquery.cookie.js" charset="utf-8"></script>
+<script src="/js/common.js" charset="utf-8"></script>
 
+<script type="text/javascript">
     layui.use(['layer', 'form'], function () {
         let layer = layui.layer,
             form = layui.form
@@ -264,7 +269,9 @@
                     layer.alert(data.message);
                 } else {
                     $('#exam_title').html(data.data.examTitle);
-
+                    $.cookie.json = true;
+                    console.log('add exam');
+                    $.cookie('examInfo',data.data,{path: '/exam/auto_test_paper_generating'});
                 }
             }
         });
@@ -332,6 +339,15 @@
                         content: '' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                     });
                 }
+            });
+        })
+        $('#showAuto').on('click',function(){
+            layer.open({
+                title: '自动组卷设置'
+                ,type: 2
+                ,area: ['800px', '400px']
+                ,id: 'auto_generate_test_paper'
+                ,content: '/exam/auto_test_paper_generating?examId=' + getURLParameter("exam_id")
             });
         })
     })

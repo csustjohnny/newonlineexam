@@ -148,15 +148,15 @@
             let data = obj.data;
             $.cookie.json = true;
             if (obj.event === 'edit') {
-                $.cookie('choiceQuestion', data,{path:'/question/choice-question'});
+                $.cookie('exam', data,{path:'/exam/exam_edit'});
                 let index = layer.open({
-                    title: '编辑编程题',
+                    title: '编辑考试',
                     type: 2,
                     shade: 0.2,
                     maxmin: true,
                     shadeClose: true,
                     area: ['100%', '100%'],
-                    content: '/question/code-question/editCodeQuestion',
+                    content: '/exam/exam_edit',
                 });
                 $(window).on("resize", function () {
                     layer.full(index);

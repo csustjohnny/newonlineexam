@@ -4,6 +4,7 @@ package com.csust.onlineexam.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csust.onlineexam.dto.Result;
 import com.csust.onlineexam.dto.ResultCode;
+import com.csust.onlineexam.dto.StudentChoiceQuestionDTO;
 import com.csust.onlineexam.entity.Exam;
 import com.csust.onlineexam.entity.Student;
 import com.csust.onlineexam.service.impl.Exam2studentServiceImpl;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -120,5 +122,10 @@ public class StudentController {
         Map<String,Object> questions = testPaperService.getQuestionsByExamId(examId);
         result.setData(questions);
         return result;
+    }
+    @PostMapping("submitQuestions")
+    public Result submitQuestions(List<StudentChoiceQuestionDTO> choiceQuestionDTOList){
+        choiceQuestionDTOList.forEach(System.out::println);
+        return Result.success();
     }
 }

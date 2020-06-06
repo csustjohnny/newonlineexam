@@ -218,18 +218,6 @@
               "target": "_self"
             }
           ]
-        },
-        {
-          "title": "成绩管理",
-          "icon": "fa fa-superpowers",
-          "child": [
-            {
-              "title": "达成度查看",
-              "href": "/admin/grade_analysis",
-              "icon": "fa fa-superpowers",
-              "target": "_self"
-            }
-          ]
         }
       ]
     }

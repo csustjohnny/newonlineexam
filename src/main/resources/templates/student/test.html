@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>试卷配置</title>
+    <title>考试</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -10,6 +10,30 @@
     <link rel="stylesheet" href="/css/public.css" media="all">
     <link rel="stylesheet" href="/lib/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/question.css">
+    <style>
+        .panel-title {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 30px;
+            padding: 5px 15px;
+        }
+        .codeTitle {
+            font-size: 20px;
+            font-weight: 400;
+            margin: 25px 0 8px;
+            color: #3091f2;
+        }
+        .sample-input .sample-output {
+            width: 50%;
+            -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-direction: column;
+            flex-direction: column;
+            margin-right: 5%;
+        }
+    </style>
 </head>
 <body>
 <div style="padding: 20px; background-color: #F2F2F2;">
@@ -55,6 +79,45 @@
                         <div class="layui-card-body">
                             <ul id="codeQuestionList">
                                 <!--编程题列表-->
+                                <li>
+                                    <div class="layui-card">
+                                        <div class="layui-card-header panel-title"><span>1、A+B 输入输出练习I</span></div>
+                                        <div class="layui-card-body">
+                                            <div data-v-6e5e6c6e="" id="problem-content" class="markdown-body">
+                                                <p
+                                                    data-v-6e5e6c6e="" class="codeTitle">描述</p>
+                                                <p data-v-6e5e6c6e="" class="content">
+                                                <p>
+                                                    你的任务是计算a+b。这是为了acm初学者专门设计的题目。你肯定发现还有其他题目跟这道题的标题类似，这些问题也都是专门为初学者提供的。<br>
+                                                </p></p> <p data-v-6e5e6c6e="" class="codeTitle">输入 <!----></p>
+                                                <p data-v-6e5e6c6e="" class="content">
+                                                <p>输入包含一系列的a和b对，通过空格隔开。一对a和b占一行。<br></p></p> <p data-v-6e5e6c6e=""
+                                                                                                class="codeTitle">输出
+                                                    <!----></p>
+                                                <p data-v-6e5e6c6e="" class="content">
+                                                <p>对于输入的每对a和b，你需要依次输出a、b的和。</p>
+                                                <p>如对于输入中的第二对a和b，在输出中它们的和应该也在第二行。<br></p></p>
+                                                <div data-v-6e5e6c6e="">
+                                                    <div data-v-6e5e6c6e="" class="flex-container sample">
+                                                        <div data-v-6e5e6c6e="" class="sample-input"><p
+                                                                data-v-6e5e6c6e="" class="codeTitle">输入样例 1
+                                                            <a data-v-6e5e6c6e="" class="copy"><i data-v-6e5e6c6e=""
+                                                                                                  class="ivu-icon ivu-icon-clipboard"></i></a>
+                                                        </p>
+                                                            <pre data-v-6e5e6c6e="">1 5
+10 20</pre>
+                                                        </div>
+                                                        <div data-v-6e5e6c6e="" class="sample-output"><p
+                                                                data-v-6e5e6c6e="" class="codeTitle">输出样例 1</p>
+                                                            <pre data-v-6e5e6c6e="">6
+30</pre>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -252,7 +315,7 @@
                     layer.alert(data.message);
                 } else {
                     $('#exam_title').html(data.data.examTitle);
-
+                    document.getElementsByTagName("title")[0].innerText = data.data.examTitle;
                 }
             }
         });
@@ -311,9 +374,9 @@
                 }
             }
         });
-        $('.addQuestionBtn').each(function(){
-            $(this).click(function(){
-                if(this.id === "iq1"){
+        $('.addQuestionBtn').each(function () {
+            $(this).click(function () {
+                if (this.id === "iq1") {
                     //添加选择题
                     layer.open({
                         type: 2,

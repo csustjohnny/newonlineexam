@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自动组卷</title>
+    <link rel="stylesheet" href="/lib/layui-v2.5.6/css/layui.css" media="all">
+</head>
+<body>
+<div>
+    <form class="layui-form" action="" lay-filter="example">
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择题个数</label>
+            <div class="layui-input-inline">
+                <input type="number" name="choiceQuestionCount" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+            <label class="layui-form-label">每题分值</label>
+            <div class="layui-input-inline">
+                <input type="number" name="scorePerChoiceQuestion" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">填空题个数</label>
+            <div class="layui-input-inline">
+                <input type="number" name="fillingQuestionCount" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+            <label class="layui-form-label">每题分值</label>
+            <div class="layui-input-inline">
+                <input type="number" name="scorePerFillingQuestion" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">判断题个数</label>
+            <div class="layui-input-inline">
+                <input type="number" name="judgementQuestionCount" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+            <label class="layui-form-label">每题分值</label>
+            <div class="layui-input-inline">
+                <input type="number" name="scorePerJudgementQuestion" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">编程题个数</label>
+            <div class="layui-input-inline">
+                <input type="number" name="codeQuestionCount" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+            <label class="layui-form-label">每题分值</label>
+            <div class="layui-input-inline">
+                <input type="number" name="scorePerCodeQuestion" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">科目</label>
+            <div class="layui-input-inline">
+                <label>
+                    <select name="subjectId" id="subjectId" lay-verify="required" lay-search="">
+                        <option value="">直接选择或搜索选择</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <!--<div class="layui-form-item">
+            <div class="layui-input-block">
+                <input type="number" name="scorePerCodeQuestion" lay-verify="title" autocomplete="off"
+                       placeholder="请输入标题"
+                       class="layui-input">
+            </div>
+        </div>-->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即生成</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/lib/jquery-3.4.1/jquery.cookie.js" charset="utf-8"></script>
+<script src="/js/common.js" charset="utf-8"></script>
+</body>
+<script type="text/javascript">
+    $(function(){
+        $.ajax({
+            type:"get",
+            async: false,
+            url: "/subject/getSubjectList",
+            success: function(data){
+                for (let i = 0; i < data.length; i++) {
+                    $("#subjectId").append("<option value=\""+
+                        data[i].subjectId +"\">"+ data[i].courseName + "</option>");
+                }
+            }
+        });
+    })
+    layui.use(['layer', 'form'], function () {
+        let $ = layui.$,
+            layer = layui.layer,
+            form = layui.form;
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            /*layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            })*/
+            $.cookie.json = true;
+            console.log($.cookie('examInfo'));
+            data.field.examId = $.cookie('examInfo').examId;
+            $.ajax({
+                type: "post",
+                url: "/exam/autoGenerateTestPaper",
+                data: JSON.stringify(data.field),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                    layer.alert(data.message);
+                }
+            });
+            return false;
+        });
+    })
+
+</script>
+</html>

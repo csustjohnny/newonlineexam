@@ -1,8 +1,11 @@
 package com.csust.onlineexam;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csust.onlineexam.entity.ChoiceQuestion;
 import com.csust.onlineexam.entity.CodeQuestion;
+import com.csust.onlineexam.entity.Judgement;
 import com.csust.onlineexam.mapper.ChoiceQuestionMapper;
+import com.csust.onlineexam.mapper.JudgementMapper;
 import com.csust.onlineexam.service.impl.ChoiceQuestionServiceImpl;
 import com.csust.onlineexam.service.impl.CodeQuestionServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,8 @@ public class QuestionTest {
     private CodeQuestionServiceImpl codeQuestionService;
     @Autowired
     ChoiceQuestionMapper choiceQuestionMapper;
+    @Autowired
+    JudgementMapper judgementMapper;
    @Test
    public void testOptionQuestion(){
        ChoiceQuestion choicequestion = new ChoiceQuestion();
@@ -96,6 +101,15 @@ public class QuestionTest {
    public void testGetChoiceQuestion(){
        choiceQuestionMapper.getStudentChoiceQuestionsByExamId(1)
                .forEach(System.out::println);
+   }
+   @Test
+   public void testRandomQuestion(){
+       /*QueryWrapper<Judgement> queryWrapper = new QueryWrapper<>();
+       queryWrapper.eq("level",2);
+       judgementMapper.getRandomQuestion(5,queryWrapper).forEach(System.out::println);*/
+       choiceQuestionMapper.getRandomQuestion(1,new QueryWrapper<>()).forEach(System.out::println);
+
+
    }
 
 }

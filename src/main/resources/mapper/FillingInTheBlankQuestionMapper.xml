@@ -11,4 +11,10 @@
           and te.question_id = ch.question_id
           and te.exam_id = #{examId}
     </select>
+    <select id="getRandomQuestion" resultType="com.csust.onlineexam.entity.FillingInTheBlankQuestion">
+        SELECT *
+        FROM t_filling_in_the_blank_question ${ew.customSqlSegment}
+        ORDER BY  RAND()
+        LIMIT #{param1}
+    </select>
 </mapper>

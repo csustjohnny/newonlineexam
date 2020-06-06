@@ -10,4 +10,10 @@
           and te.question_id = ch.id
           and te.exam_id = #{examId}
     </select>
+    <select id="getRandomQuestion" resultType="com.csust.onlineexam.entity.Judgement">
+        SELECT *
+        FROM t_judgement ${ew.customSqlSegment}
+        ORDER BY  RAND()
+         LIMIT #{count}
+    </select>
 </mapper>

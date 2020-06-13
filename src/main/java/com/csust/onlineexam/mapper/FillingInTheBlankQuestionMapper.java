@@ -10,6 +10,7 @@ import com.csust.onlineexam.entity.Judgement;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -33,4 +34,10 @@ public interface FillingInTheBlankQuestionMapper extends BaseMapper<FillingInThe
      * @return 题目列表
      */
     List<FillingInTheBlankQuestion> getRandomQuestion(Integer count, @Param(Constants.WRAPPER) Wrapper<FillingInTheBlankQuestion> wrapper);
+
+    List<Map<String,Double>> getGradeAnalysisByStudent(String studentNo);
+
+    Integer getScoreByExamIdStudent(String studentNo,Integer examId);
+
+
 }

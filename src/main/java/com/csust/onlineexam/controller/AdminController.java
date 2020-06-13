@@ -565,7 +565,12 @@ public class AdminController {
         }
         return null;
     }
+    @GetMapping("/getGradeAnalysis")
+    public Result getGradeAnalysis(@RequestParam Integer classId,
+                                   @RequestParam String name){
 
+        return Result.success();
+    }
     @GetMapping("getAllSubjects")
     @ApiOperation("获取所有科目")
     @ApiImplicitParams({

@@ -16,4 +16,25 @@
         ORDER BY  RAND()
          LIMIT #{count}
     </select>
+    <select id="getGradeAnalysisByStudent" resultType="java.util.Map">
+        select count(*),index_name
+        from t_student_exam_info sei
+                 JOIN t_judgement j on sei.question_id = j.id and sei.question_type = "判断题" and sei.answer = j.answer
+                 left JOIN t_test_paper tp on tp.exam_id = sei.exam_id and tp.question_type = 'judgement_question'
+            and tp.question_id = j.id
+                 left join t_index on tp.index_id = t_index.ID
+        WHERE sei.student_no = #{studentNo}
+        GROUP BY index_name
+    </select>
+    <select id="getScoreByExamIdStudent" resultType="java.lang.Integer">
+        select SUM(score)
+        from t_student_exam_info sei
+                 JOIN t_judgement j on sei.question_id = j.id and sei.question_type = "判断题" and sei.answer = j.answer
+                and sei.answer != ""
+                 left JOIN t_test_paper tp on tp.exam_id = sei.exam_id and tp.question_type = 'judgement_question'
+            and tp.question_id = j.id
+                 left join t_index on tp.index_id = t_index.ID
+        WHERE sei.student_no = #{studentNo} and sei.exam_id = #{examId}
+        GROUP BY sei.student_no
+    </select>
 </mapper>

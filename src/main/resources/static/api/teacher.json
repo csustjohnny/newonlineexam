@@ -24,46 +24,8 @@
           "target": "_self",
           "child": [
             {
-              "title": "主页一",
-              "href": "page/welcome-1.html",
-              "icon": "fa fa-tachometer",
-              "target": "_self"
-            },
-            {
-              "title": "主页二",
-              "href": "page/welcome-2.html",
-              "icon": "fa fa-tachometer",
-              "target": "_self"
-            },
-            {
-              "title": "主页三",
-              "href": "page/welcome-3.html",
-              "icon": "fa fa-tachometer",
-              "target": "_self"
-            }
-          ]
-        },
-        {
-          "title": "毕业达成度查看",
-          "href": "",
-          "icon": "fa fa-home",
-          "target": "_self",
-          "child": [
-            {
-              "title": "主页一",
-              "href": "page/welcome-1.html",
-              "icon": "fa fa-tachometer",
-              "target": "_self"
-            },
-            {
-              "title": "主页二",
-              "href": "page/welcome-2.html",
-              "icon": "fa fa-tachometer",
-              "target": "_self"
-            },
-            {
-              "title": "主页三",
-              "href": "page/welcome-3.html",
+              "title": "成绩管理",
+              "href": "",
               "icon": "fa fa-tachometer",
               "target": "_self"
             }
@@ -165,12 +127,6 @@
           "icon": "fa fa-dot-circle-o",
           "target": "_self",
           "child": [
-            {
-              "title": "试卷管理",
-              "href": "page/welcome-3.html",
-              "icon": "fa fa-tachometer",
-              "target": "_self"
-            },
             {
               "title": "考试管理",
               "href": "/exam/exam_management",

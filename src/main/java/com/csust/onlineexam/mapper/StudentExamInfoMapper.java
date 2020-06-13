@@ -1,6 +1,6 @@
 package com.csust.onlineexam.mapper;
 
-import com.csust.onlineexam.entity.TestPaper;
+import com.csust.onlineexam.entity.StudentExamInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author johnNick
  * @since 2020-06-06
  */
-public interface TestPaperMapper extends BaseMapper<TestPaper> {
+public interface StudentExamInfoMapper extends BaseMapper<StudentExamInfo> {
 
 }

@@ -54,7 +54,7 @@ public class TestPaperController {
         List<TestPaper> paperList = testPaperService.list(new QueryWrapper<TestPaper>().eq("exam_id",examId));
         //paperList.forEach(System.out::println);
         //选择题列表
-        List<Integer> choiceQuestionIdList = paperList.stream()
+        List<Integer> choiceQuestionIdList = paperList.stream().sorted(Comparator.comparing(TestPaper::getQuestionOrder))
                 .filter(testPaper -> Constant.CHOICE_QUESTION_TYPE.equals(testPaper.getQuestionType()))
                 .map(TestPaper::getQuestionId).collect(Collectors.toList());
         List<ChoiceQuestion> choiceQuestionList = new ArrayList<>(0);
@@ -63,7 +63,8 @@ public class TestPaperController {
         }
         //填空题列表
         List<Integer> fillingBlankQuestionIdList = paperList.stream()
-                .filter(testPaper -> Constant.FILLING_IN_THE_BLANK_QUESTION_TYPE.equals(testPaper.getQuestionType())).sorted()
+                .filter(testPaper -> Constant.FILLING_IN_THE_BLANK_QUESTION_TYPE.equals(testPaper.getQuestionType()))
+                .sorted(Comparator.comparing(TestPaper::getQuestionOrder))
                 .map(TestPaper::getQuestionId).collect(Collectors.toList());
         List<FillingInTheBlankQuestion> fillingInTheBlankQuestionList = new ArrayList<>(0);
         if(fillingBlankQuestionIdList.size()>0) {
@@ -71,7 +72,7 @@ public class TestPaperController {
         }
 
         //判断题列表
-        List<Integer> judgementQuestionIdList = paperList.stream()
+        List<Integer> judgementQuestionIdList = paperList.stream().sorted(Comparator.comparing(TestPaper::getQuestionOrder))
                 .filter(testPaper -> Constant.JUDGEMENT_QUESTION_TYPE.equals(testPaper.getQuestionType()))
                 .map(TestPaper::getQuestionId).collect(Collectors.toList());
         List<Judgement> judgementList = new ArrayList<>(0);
@@ -79,7 +80,7 @@ public class TestPaperController {
             judgementList = judgementService.listByIds(judgementQuestionIdList);
         }
         //编程题列表
-        List<Integer> codeQuestionIdList = paperList.stream()
+        List<Integer> codeQuestionIdList = paperList.stream().sorted(Comparator.comparing(TestPaper::getQuestionOrder))
                 .filter(testPaper -> Constant.CODE_QUESTION_TYPE.equals(testPaper.getQuestionType()))
                 .map(TestPaper::getQuestionId).collect(Collectors.toList());
         List<CodeQuestion> codeQuestionList = new ArrayList<>(0);

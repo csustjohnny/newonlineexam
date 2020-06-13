@@ -11,14 +11,13 @@
         <div class="layui-form-item">
             <label class="layui-form-label">选择题个数</label>
             <div class="layui-input-inline">
-                <input type="number" name="choiceQuestionCount" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
+                <input type="number" value="0" name="choiceQuestionCount" lay-verify="title" autocomplete="off"
                        class="layui-input">
             </div>
             <label class="layui-form-label">每题分值</label>
             <div class="layui-input-inline">
                 <input type="number" name="scorePerChoiceQuestion" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
+                       value="0"
                        class="layui-input">
             </div>
         </div>
@@ -26,13 +25,13 @@
             <label class="layui-form-label">填空题个数</label>
             <div class="layui-input-inline">
                 <input type="number" name="fillingQuestionCount" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
+                       value="0"
                        class="layui-input">
             </div>
             <label class="layui-form-label">每题分值</label>
             <div class="layui-input-inline">
                 <input type="number" name="scorePerFillingQuestion" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
+                       value="0"
                        class="layui-input">
             </div>
         </div>
@@ -40,26 +39,26 @@
             <label class="layui-form-label">判断题个数</label>
             <div class="layui-input-inline">
                 <input type="number" name="judgementQuestionCount" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
+                       value="0"
                        class="layui-input">
             </div>
             <label class="layui-form-label">每题分值</label>
             <div class="layui-input-inline">
                 <input type="number" name="scorePerJudgementQuestion" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
+                       value="0"
                        class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">编程题个数</label>
             <div class="layui-input-inline">
-                <input type="number" name="codeQuestionCount" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                <input type="number" name="codeQuestionCount" lay-verify="title" autocomplete="off" value="0"
                        class="layui-input">
             </div>
             <label class="layui-form-label">每题分值</label>
             <div class="layui-input-inline">
                 <input type="number" name="scorePerCodeQuestion" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
+                       value="0"
                        class="layui-input">
             </div>
         </div>
@@ -73,13 +72,6 @@
                 </label>
             </div>
         </div>
-        <!--<div class="layui-form-item">
-            <div class="layui-input-block">
-                <input type="number" name="scorePerCodeQuestion" lay-verify="title" autocomplete="off"
-                       placeholder="请输入标题"
-                       class="layui-input">
-            </div>
-        </div>-->
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即生成</button>
@@ -117,7 +109,6 @@
                 title: '最终的提交信息'
             })*/
             $.cookie.json = true;
-            console.log($.cookie('examInfo'));
             data.field.examId = $.cookie('examInfo').examId;
             $.ajax({
                 type: "post",

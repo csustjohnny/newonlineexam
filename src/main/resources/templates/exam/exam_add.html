@@ -67,6 +67,14 @@
         </div>
     </div>
     <div class="layui-form-item">
+        <label class="layui-form-label">考试学生</label>
+        <div class="layui-input-block">
+            <label>
+                <input type="text" name="studentNo"  value="201616080307" class="layui-input">
+            </label>
+        </div>
+    </div>
+    <div class="layui-form-item">
         <div class="layui-input-block">
             <button class="layui-btn" lay-submit lay-filter="saveBtn">确认添加</button>
         </div>
@@ -112,7 +120,7 @@
                 return false;
             } else {
                 $.ajax({
-                    url: "/exam/saveOrUpdateExam",
+                    url: "/exam/saveOrUpdateExam?studentNo="+data.field.studentNo,
                     type: "post",
                     data: JSON.stringify(data.field),
                     dataType: "json",

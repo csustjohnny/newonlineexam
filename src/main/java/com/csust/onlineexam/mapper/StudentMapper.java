@@ -1,13 +1,11 @@
 package com.csust.onlineexam.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.csust.onlineexam.entity.Student;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
@@ -28,4 +26,6 @@ public interface StudentMapper extends BaseMapper<Student> {
      * @return 查询结果
      */
     List<Map<String,Object>> getStudentInfoList(Page<Map<String,Object>> page, @Param(Constants.WRAPPER) Wrapper<Student> wrapper);
+
+
 }

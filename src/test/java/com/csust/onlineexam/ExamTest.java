@@ -4,7 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.csust.onlineexam.dto.ExamDTO;
 import com.csust.onlineexam.entity.Exam;
 import com.csust.onlineexam.entity.Student;
+import com.csust.onlineexam.entity.StudentExamInfo;
 import com.csust.onlineexam.entity.TestPaper;
+import com.csust.onlineexam.mapper.ChoiceQuestionMapper;
+import com.csust.onlineexam.mapper.JudgementMapper;
+import com.csust.onlineexam.mapper.StudentExamInfoMapper;
+import com.csust.onlineexam.mapper.StudentMapper;
 import com.csust.onlineexam.service.impl.ChoiceQuestionServiceImpl;
 import com.csust.onlineexam.service.impl.Exam2studentServiceImpl;
 import com.csust.onlineexam.service.impl.TestPaperServiceImpl;
@@ -32,6 +37,10 @@ public class ExamTest {
     TestPaperServiceImpl testPaperService;
     @Autowired
     ChoiceQuestionServiceImpl choiceQuestionService;
+    @Autowired
+    JudgementMapper judgementMapper;
+    @Autowired
+    ChoiceQuestionMapper choiceQuestionMapper;
     @Test
     public void testAddExam(){
         String str = "2020-05-20 21:44:18";
@@ -61,5 +70,11 @@ public class ExamTest {
                 .map(TestPaper::getQuestionId).collect(Collectors.toList());
         choiceQuestionService.listByIds(choiceIdList).forEach(System.out::println);
         //choiceIdList.forEach(System.out::println);
+    }
+    @Test
+    public void testGradeAnalysis(){
+        //judgementMapper.getGradeAnalysisByStudent("201616080307").forEach(System.out::println);
+        System.out.println(judgementMapper.getScoreByExamIdStudent("201616080307",5));
+        System.out.println(choiceQuestionMapper.getScoreByExamIdStudent("201616080307",9));
     }
 }

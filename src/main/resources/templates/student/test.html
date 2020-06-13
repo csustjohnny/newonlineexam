@@ -33,6 +33,18 @@
             flex-direction: column;
             margin-right: 5%;
         }
+        .layui-card-header p {
+            /*width: 148px;*/
+            height: 45px;
+            padding-left: 10px;
+            border: 1px solid #e4e4e4;
+            border-left-color: rgb(228, 228, 228);
+            display: block;
+            float: left;
+            font-size: 16px;
+            color: #f00;
+            margin: 0px;
+        }
     </style>
 </head>
 <body>
@@ -41,7 +53,11 @@
         <div class="layui-col-md9">
             <div class="layui-card">
                 <div style="background: #009E94" class="layui-card-header exam-title" id="exam_title"></div>
-                <div class="layui-card-body">
+               <form class="layui-form">
+                   <!--<div hidden>
+                       <input name="examId" type="text"/>
+                   </div>-->
+                    <div class="layui-card-body">
                     <div class="layui-card">
                         <div class="layui-card-header ">
                             <div class="question_title">选择题</div>
@@ -79,55 +95,24 @@
                         <div class="layui-card-body">
                             <ul id="codeQuestionList">
                                 <!--编程题列表-->
-                                <li>
-                                    <div class="layui-card">
-                                        <div class="layui-card-header panel-title"><span>1、A+B 输入输出练习I</span></div>
-                                        <div class="layui-card-body">
-                                            <div data-v-6e5e6c6e="" id="problem-content" class="markdown-body">
-                                                <p
-                                                    data-v-6e5e6c6e="" class="codeTitle">描述</p>
-                                                <p data-v-6e5e6c6e="" class="content">
-                                                <p>
-                                                    你的任务是计算a+b。这是为了acm初学者专门设计的题目。你肯定发现还有其他题目跟这道题的标题类似，这些问题也都是专门为初学者提供的。<br>
-                                                </p></p> <p data-v-6e5e6c6e="" class="codeTitle">输入 <!----></p>
-                                                <p data-v-6e5e6c6e="" class="content">
-                                                <p>输入包含一系列的a和b对，通过空格隔开。一对a和b占一行。<br></p></p> <p data-v-6e5e6c6e=""
-                                                                                                class="codeTitle">输出
-                                                    <!----></p>
-                                                <p data-v-6e5e6c6e="" class="content">
-                                                <p>对于输入的每对a和b，你需要依次输出a、b的和。</p>
-                                                <p>如对于输入中的第二对a和b，在输出中它们的和应该也在第二行。<br></p></p>
-                                                <div data-v-6e5e6c6e="">
-                                                    <div data-v-6e5e6c6e="" class="flex-container sample">
-                                                        <div data-v-6e5e6c6e="" class="sample-input"><p
-                                                                data-v-6e5e6c6e="" class="codeTitle">输入样例 1
-                                                            <a data-v-6e5e6c6e="" class="copy"><i data-v-6e5e6c6e=""
-                                                                                                  class="ivu-icon ivu-icon-clipboard"></i></a>
-                                                        </p>
-                                                            <pre data-v-6e5e6c6e="">1 5
-10 20</pre>
-                                                        </div>
-                                                        <div data-v-6e5e6c6e="" class="sample-output"><p
-                                                                data-v-6e5e6c6e="" class="codeTitle">输出样例 1</p>
-                                                            <pre data-v-6e5e6c6e="">6
-30</pre>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
+
                             </ul>
                         </div>
                     </div>
                 </div>
+                   <div class="layui-form-item">
+                       <div style="text-align: center;">
+                           <button type="submit"  class="layui-btn" lay-submit="" lay-filter="demo1">立即交卷</button>
+                       </div>
+                   </div>
+               </form>
             </div>
         </div>
         <div class="layui-col-md3">
             <div class="layui-card">
                 <div class="layui-card-header">
                     <h1>答题卡</h1>
+                    <p id="test"></p>
                 </div>
                 <div class="layui-card-body">
                     <div class="answer-card-content">
@@ -189,18 +174,98 @@
 </div>
 <script src="/lib/layui-v2.5.6/layui.js" charset="utf-8"></script>
 <script src="/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script src="/js/common.js" charset="utf-8"></script>
 <script type="text/javascript">
-    function getURLParameter(name) {
-        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
-    }
-
-    layui.use(['layer', 'form'], function () {
+    layui.use(['layer', 'form','util'], function () {
         let layer = layui.layer,
-            form = layui.form
+            form = layui.form,
+            util = layui.util;
+        let serverTimeString,endTimeString,startTimeString;
+        form.on('submit(demo1)', function (data) {
+            /*layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            })*/
+            data.field.examId = getURLParameter('exam_id');
+            $.ajax({
+                type: "post",
+                url: "/student/submitTestPaper",
+                data: data.field,
+                //dataType: "json",
+                contentType: "application/x-www-form-urlencoded",
+                beforeSend: function () {
+                    i = ityzl_SHOW_LOAD_LAYER();
+                },
+                success: function (data) {
+                    ityzl_CLOSE_LOAD_LAYER(i);
 
+                    if(data.code !== 200){
+                        layer.alert(data.data);
+                    } else{
+                    layer.msg("判题中...");
+                    $.ajax({
+                        type: 'get',
+                        url: '/student/getExamScore',
+                        data:{
+                            examId: getURLParameter('exam_id')
+                        },
+                        success: function(result){
+                            if(result.code===200){
+                                layer.alert("您的成绩是："+result.data+'分');
+                            } else {
+                                layer.alert(result.message);
+                            }
+
+                        },
+                        error: function(){
+                            layer.alert("连接失败");
+                        }
+                    })
+                    }
+                },
+                error: function(){
+                    ityzl_CLOSE_LOAD_LAYER(i);
+                }
+            });
+            return false;
+        });
         //添加编程题节点
         function addCodeQuestionNode(node, value, k) {
-
+            node.append(' <li>\n' +
+                '    <div class="layui-card">\n' +
+                '        <div class="layui-card-header panel-title"><span>'+value.title+'</span></div>\n' +
+                '        <div class="layui-card-body">\n' +
+                '            <div id="problem-content" class="markdown-body">\n' +
+                '                <p\n' +
+                '                    class="codeTitle">描述</p>\n' +
+                '                <p class="content">\n' +
+                '                <p>\n' +value.description+'<br>\n' +
+                '                </p>\n' +
+                '                <p  class="codeTitle">输入</p>\n' +
+                '                <p  class="content">\n' +
+                value.input +
+                '                class="codeTitle">输出\n' +
+                '                <p class="content">\n' +
+                value.output +
+                '</p>\n' +
+                '                <div>\n' +
+                '                    <div class="flex-container sample">\n' +
+                '                        <div class="sample-input"><p\n' +
+                '                                 class="codeTitle">输入样例 1\n' +
+                '                            <a  class="copy"><i\n' +
+                '                                    class="ivu-icon ivu-icon-clipboard"></i></a>\n' +
+                '                        </p>\n' +
+                '                            <pre >'+value.sampleInput+'</pre>\n' +
+                '                        </div>\n' +
+                '                        <div  class="sample-output"><p\n' +
+                '                                 class="codeTitle">输出样例 1</p>\n' +
+                '                            <pre>'+value.sampleOutput+'</pre>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                </div>\n' +
+                '            </div>\n' +
+                '        </div>\n' +
+                '    </div>\n' +
+                '</li>');
         }
 
         //添加填空题节点
@@ -209,16 +274,16 @@
                 '            <div class="layui-text"><span id=\"fl_title_' + value.questionId + '\">'
                 + (k + 1) + '、' + value.question + '</span></div><hr/>' +
                 '            <div class="layui-card-body">' +
-                '                <form class="layui-form" action="">' +
+                //'                <form class="layui-form" action="">' +
                 '                    <div class="layui-form-item">' +
                 '                        <div class="layui-row layui-col-space10" id=\"blank_' + value.questionId + '"></div>' +
                 '                    </div>' +
-                '                </form>' +
+                //'                </form>' +
                 '            </div>' +
                 '        </div></li>');
             for (let i = 1; i <= value.blankCount; i++) {
                 $('#blank_' + value.questionId).append('<div class="layui-col-xs6 layui-col-sm6 layui-col-md4"> <label>' + i +
-                    '                                        、<input type="text" class="blank" id="blank_' + value.questionId + '_' + i + '">' +
+                    '                                        、<input type="text" class="blank" name="blank_' + value.questionId + '_' + i + '">' +
                     '                                    </label></div>')
             }
         }
@@ -229,7 +294,7 @@
                 '            <div class="layui-text"><span id=\"ju_title_' + value.id + '\">'
                 + (k + 1) + '、' + value.title + '</span></div><hr/>' +
                 '            <div class="layui-card-body">' +
-                '                <form class="layui-form" action="">' +
+                //'                <form class="layui-form" action="">' +
                 '                    <div class="layui-form-item">' +
                 '                        <div class="layui-row layui-col-space10" id=\"judgement_' + value.id + '"></div>' +
                 '  <div class="layui-form-item">\n' +
@@ -240,7 +305,7 @@
                 '    </div>\n' +
                 '  </div>' +
                 '                    </div>' +
-                '                </form>' +
+               // '                </form>' +
                 '            </div>' +
                 '        </div></li>');
 
@@ -251,52 +316,52 @@
                 '            <div class="layui-text"><span id=\"ch_title_' + value.id + '\">'
                 + (k + 1) + '、' + value.title + '</span></div><hr/>' +
                 '            <div class="layui-card-body">' +
-                '                <form class="layui-form" action="">' +
+                //'                <form class="layui-form" action="">' +
                 '                    <div class="layui-form-item">' +
                 '                        <ul id=\"option_' + value.id + '"></ul>' +
                 '                    </div>' +
-                '                </form>' +
+                //'                </form>' +
                 '            </div>' +
                 '        </div></li>');
             if (value.isMultiple) {
                 //多选
                 if (value.optionA != null && value.optionA !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[A]' title='A、" + value.optionA + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='ch_a_"+value.id+"[A]' title='A、" + value.optionA + "'></li>");
                 }
                 if (value.optionB != null && value.optionB !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[B]' title='B、" + value.optionB + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='ch_a_"+value.id+"[B]' title='B、" + value.optionB + "'></li>");
                 }
                 if (value.optionC != null && value.optionC !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[C]' title='C、" + value.optionC + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='ch_a_"+value.id+"[C]' title='C、" + value.optionC + "'></li>");
                 }
                 if (value.optionD != null && value.optionD !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[D]' title='D、" + value.optionD + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='ch_a_"+value.id+"[D]' title='D、" + value.optionD + "'></li>");
                 }
                 if (value.optionE != null && value.optionE !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[E]' title='E、" + value.optionE + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='ch_a_"+value.id+"[E]' title='E、" + value.optionE + "'></li>");
                 }
                 if (value.optionF != null && value.optionF !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='sOption[F]' title='F、" + value.optionF + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='checkbox' lay-skin='primary' name='ch_a_"+value.id+"[F]' title='F、" + value.optionF + "'></li>");
                 }
             } else {
                 //单选
                 if (value.optionA != null && value.optionA !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='sOption' value='A' title='A、" + value.optionA + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='ch_a_"+value.id+"' value='A' title='A、" + value.optionA + "'></li>");
                 }
                 if (value.optionB != null && value.optionB !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='sOption' value='B' title='B、" + value.optionB + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='ch_a_"+value.id+"' value='B' title='B、" + value.optionB + "'></li>");
                 }
                 if (value.optionC != null && value.optionC !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='sOption' value='B' title='C、" + value.optionC + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='ch_a_"+value.id+"' value='C' title='C、" + value.optionC + "'></li>");
                 }
                 if (value.optionD != null && value.optionD !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='sOption' value='B' title='D、" + value.optionD + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='ch_a_"+value.id+"' value='D' title='D、" + value.optionD + "'></li>");
                 }
                 if (value.optionE != null && value.optionE !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='sOption' value='E' title='E、" + value.optionE + "'></li>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='ch_a_"+value.id+"' value='E' title='E、" + value.optionE + "'></li>");
                 }
                 if (value.optionF != null && value.optionF !== "") {
-                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='sOption' value='F' title='F、" + value.optionF + "'></li>>");
+                    $('#option_' + value.id).append("<li class='layui-col-md12'><input type='radio' name='ch_a_"+value.id+"' value='F' title='F、" + value.optionF + "'></li>>");
                 }
             }
 
@@ -314,8 +379,46 @@
                 if (data.code !== 200) {
                     layer.alert(data.message);
                 } else {
-                    $('#exam_title').html(data.data.examTitle);
                     document.getElementsByTagName("title")[0].innerText = data.data.examTitle;
+                    $('#exam_title').html(data.data.examTitle);
+                    startTimeString = data.data.startTime.split('T');
+                    startTimeString[0] = startTimeString[0].split('-');
+                    startTimeString[1] = startTimeString[1].split(':');
+                    endTimeString = data.data.endTime.split('T');
+                    endTimeString[0] = endTimeString[0].split('-');
+                    endTimeString[1] = endTimeString[1].split(':');
+
+                    //开始日期
+                    let startTime = new Date(parseInt(startTimeString[0][0],10),
+                        parseInt(startTimeString[0][1],10),parseInt(startTimeString[0][2],10),
+                        parseInt(startTimeString[1][0],10),parseInt(startTimeString[1][1],10),
+                        parseInt(startTimeString[1][2],10)).getTime();
+                    let endTime = new Date(parseInt(endTimeString[0][0],10),
+                        parseInt(endTimeString[0][1],10),parseInt(endTimeString[0][2],10),
+                        parseInt(endTimeString[1][0],10),parseInt(endTimeString[1][1],10),
+                        parseInt(endTimeString[1][2],10)).getTime();
+                    $.ajax({
+                        type: "get",
+                        async: false,
+                        url: "/student/getSysTime",
+                        success: function (data) {
+                            serverTimeString = data.data.toString().split(' ');
+                        }
+                    });
+                    let serverTime = new Date(parseInt(serverTimeString[0],10),
+                        parseInt(serverTimeString[1],10),parseInt(serverTimeString[2],10),
+                        parseInt(serverTimeString[3],10),parseInt(serverTimeString[4]),10,
+                        parseInt(serverTimeString[5],10)).getTime(); //假设为当前服务器时间，这里采用的是本地时间，实际使用一般是取服务端的
+                    if(startTime > serverTime){
+                        $('#test').html("未开始");
+                    } else if(endTime < serverTime){
+                        $('#test').html("已结束");
+                    } else {
+                    util.countdown(endTime, serverTime, function(date, serverTime, timer){
+                        let str = date[0] + '天' + date[1] + '时' +  date[2] + '分' + date[3] + '秒';
+                        $('#test').html(str);
+                    });
+                    }
                 }
             }
         });

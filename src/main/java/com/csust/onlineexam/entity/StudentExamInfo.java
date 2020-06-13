@@ -1,5 +1,6 @@
 package com.csust.onlineexam.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.io.Serializable;
@@ -20,28 +21,26 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("t_test_paper")
-@ApiModel(value="TestPaper对象", description="")
-public class TestPaper extends Model<TestPaper> {
+@TableName("t_student_exam_info")
+@ApiModel(value="StudentExamInfo对象", description="")
+public class StudentExamInfo extends Model<StudentExamInfo> {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer examId;
+    private String studentNo;
 
-    private String questionType;
+    private Integer examId;
 
     private Integer questionId;
 
-    private Integer indexId;
+    private String questionType;
 
-    private Integer questionOrder;
-
-    private Integer score;
+    private String answer;
 
 
     @Override
     protected Serializable pkVal() {
-        return this.examId;
+        return this.studentNo;
     }
 
 }

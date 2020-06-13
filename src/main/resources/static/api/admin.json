@@ -208,12 +208,12 @@
           ]
         },
         {
-          "title": "考试管理",
+          "title": "成绩管理",
           "icon": "fa fa-superpowers",
           "child": [
             {
-              "title": "编程题管理",
-              "href": "page/error.html",
+              "title": "达成度查看",
+              "href": "/admin/grade_analysis",
               "icon": "fa fa-superpowers",
               "target": "_self"
             }

@@ -270,7 +270,6 @@
                 } else {
                     $('#exam_title').html(data.data.examTitle);
                     $.cookie.json = true;
-                    console.log('add exam');
                     $.cookie('examInfo',data.data,{path: '/exam/auto_test_paper_generating'});
                 }
             }

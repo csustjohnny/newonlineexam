@@ -9,6 +9,7 @@ import com.csust.onlineexam.entity.Student;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -33,4 +34,12 @@ public interface JudgementMapper extends BaseMapper<Judgement> {
      * @return 题目列表
      */
     List<Judgement> getRandomQuestion(Integer count, @Param(Constants.WRAPPER) Wrapper<Judgement> wrapper);
+
+    /**
+     * @param studentNo
+     * @return
+     */
+    List<Map<String,Double>> getGradeAnalysisByStudent(String studentNo);
+
+    Integer getScoreByExamIdStudent(String studentNo,Integer examId);
 }
